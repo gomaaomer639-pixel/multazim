@@ -1,0 +1,2407 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ملتزم — بلانر يومي بأسلوب حياة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-dark: #0f221b;
+      --bg-card: #152b22;
+      --bg-card-alt: #193329;
+      --emerald: #1f5c45;
+      --emerald-light: #287558;
+      --gold: #ecc968;
+      --gold-hover: #f5d67b;
+      --gold-dark: #3a2d08;
+      --text-main: #f4f7f5;
+      --text-muted: #b4c7be;
+      --border-subtle: rgba(255, 255, 255, 0.09);
+      --orange: #d96b27;
+      --purple: #7c4dff;
+      --blue: #2979ff;
+      --crimson: #b83258;
+      --teal: #1d7a6e;
+      --amber: #b38628;
+      --vodafone: #b91c1c;
+      --whatsapp: #25d366;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.7;
+      padding-bottom: 84px;
+      overflow-x: hidden;
+    }
+
+    .ruqaa {
+      font-family: 'Aref Ruqaa', serif;
+      line-height: 1.4;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 18px;
+    }
+
+    /* Sticky Top Countdown Bar */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 900;
+      background: rgba(12, 28, 22, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+    }
+
+    .top-bar .label {
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .countdown-pill {
+      background: #1b382c;
+      border: 1px solid rgba(236, 201, 104, 0.25);
+      color: #fff;
+      padding: 3px 12px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      direction: ltr;
+      font-size: 0.88rem;
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      background: linear-gradient(180deg, #1f5c45 0%, #194d39 100%);
+      padding: 38px 18px 54px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .circles-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle, transparent 42px, rgba(255, 255, 255, 0.06) 43px, rgba(255, 255, 255, 0.06) 45px, transparent 46px);
+      background-size: 115px 115px;
+      background-position: center top;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .hero-logo {
+      font-size: 4.5rem;
+      font-weight: 700;
+      color: #0b1c15;
+      margin-bottom: 2px;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .hero-tagline {
+      font-size: 1.55rem;
+      color: var(--gold);
+      margin-bottom: 18px;
+      font-weight: 700;
+    }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      color: #eef5f1;
+      max-width: 480px;
+      margin: 0 auto 24px;
+      font-weight: 500;
+    }
+
+    .badges-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 26px;
+    }
+
+    .pill-badge {
+      padding: 5px 16px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.3px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+    }
+
+    .b-skills { background: #2962ff; }
+    .b-study { background: #7b3fe4; }
+    .b-sports { background: #e06d26; }
+    .b-worship { background: #2e8b57; }
+    .b-lang { background: #c23664; }
+
+    .hero-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      max-width: 440px;
+      margin: 0 auto 20px;
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: var(--gold-dark);
+      border: none;
+      border-radius: 14px;
+      padding: 14px 20px;
+      font-family: 'Cairo', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-gold:hover {
+      background: var(--gold-hover);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      background: rgba(15, 34, 27, 0.25);
+      color: #fff;
+      border: 1.5px solid rgba(255, 255, 255, 0.45);
+      border-radius: 14px;
+      padding: 14px 20px;
+      font-family: 'Cairo', sans-serif;
+      font-size: 1.02rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: #fff;
+    }
+
+    .hero-perks {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px 18px;
+      font-size: 0.88rem;
+      color: #e4efe9;
+      margin-bottom: 28px;
+    }
+
+    .hero-perks span::before {
+      content: "✓ ";
+      color: var(--gold);
+      font-weight: 900;
+    }
+
+    /* Spread Preview Mockup */
+    .spread-card {
+      background: #f6f1e3;
+      border-radius: 16px;
+      padding: 12px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      border: 3px solid rgba(255, 255, 255, 0.25);
+      color: #1f2937;
+    }
+
+    .spread-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .sheet-mock {
+      background: #fffdf7;
+      border: 1px solid #dfd7c2;
+      border-radius: 10px;
+      padding: 10px;
+      text-align: right;
+      font-size: 0.68rem;
+    }
+
+    .sheet-header {
+      background: #1f5c45;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 8px;
+      font-size: 0.72rem;
+    }
+
+    .mini-box {
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 5px;
+      margin-bottom: 6px;
+    }
+
+    .mini-box-title {
+      font-weight: 800;
+      font-size: 0.65rem;
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: #fff;
+      margin-bottom: 4px;
+      display: inline-block;
+    }
+
+    .mini-lines div {
+      height: 6px;
+      border-bottom: 1px dashed #cbd5e1;
+      margin-bottom: 4px;
+    }
+
+    .spread-labels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .spread-pill {
+      background: rgba(15, 34, 27, 0.75);
+      color: var(--gold);
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      border: 1px solid rgba(236, 201, 104, 0.3);
+    }
+
+    /* Stats Section */
+    .stats-section {
+      padding: 36px 0 18px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--bg-card);
+      border-radius: 20px;
+      border: 1px solid var(--border-subtle);
+      overflow: hidden;
+    }
+
+    .stat-item {
+      padding: 24px 16px;
+      text-align: center;
+      border-bottom: 1px solid var(--border-subtle);
+      border-left: 1px solid var(--border-subtle);
+    }
+
+    .stat-item:nth-child(2n) {
+      border-left: none;
+    }
+
+    .stat-item:nth-child(3),
+    .stat-item:nth-child(4) {
+      border-bottom: none;
+    }
+
+    .stat-num {
+      font-size: 2.15rem;
+      font-weight: 900;
+      color: var(--gold);
+      line-height: 1.2;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Section Headings */
+    .sec-block {
+      padding: 34px 0;
+    }
+
+    .sec-title {
+      font-size: 2.2rem;
+      color: var(--gold);
+      margin-bottom: 6px;
+      text-align: right;
+    }
+
+    .sec-sub {
+      color: var(--text-muted);
+      font-size: 0.98rem;
+      margin-bottom: 22px;
+    }
+
+    /* Why Multazim Cards */
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 22px 20px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 6px;
+    }
+
+    .fc-teal::before { background: #269173; }
+    .fc-orange::before { background: #e06d26; }
+    .fc-purple::before { background: #7b3fe4; }
+
+    .feature-card h3 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Index (TOC) Cards */
+    .toc-card {
+      background: var(--bg-card);
+      border-radius: 18px;
+      overflow: hidden;
+      margin-bottom: 18px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .toc-header {
+      padding: 13px 18px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #fff;
+    }
+
+    .toc-body {
+      padding: 14px 18px;
+    }
+
+    .toc-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 7px 0;
+      font-size: 0.94rem;
+    }
+
+    .toc-topic {
+      color: #eef5f1;
+      font-weight: 600;
+    }
+
+    .toc-dots {
+      flex: 1;
+      border-bottom: 1.5px dotted rgba(255, 255, 255, 0.2);
+      margin: 0 6px;
+    }
+
+    .toc-page {
+      font-weight: 800;
+      font-size: 0.92rem;
+      white-space: nowrap;
+    }
+
+    .c-teal .toc-header { background: #257a63; }
+    .c-teal .toc-page { color: #54d1af; }
+
+    .c-orange .toc-header { background: #c95d22; }
+    .c-orange .toc-page { color: #f59662; }
+
+    .c-purple .toc-header { background: #7344bd; }
+    .c-purple .toc-page { color: #b794f6; }
+
+    .c-blue .toc-header { background: #2a599c; }
+    .c-blue .toc-page { color: #7bb2ff; }
+
+    .c-crimson .toc-header { background: #a83254; }
+    .c-crimson .toc-page { color: #f47fa0; }
+
+    .c-cyan .toc-header { background: #1d6e78; }
+    .c-cyan .toc-page { color: #67d4e0; }
+
+    .c-amber .toc-header { background: #9c7422; }
+    .c-amber .toc-page { color: #ecc968; }
+
+    /* Pricing / Version Cards */
+    .version-card {
+      background: var(--bg-card);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      border-radius: 22px;
+      padding: 24px 20px;
+      margin-bottom: 22px;
+    }
+
+    .version-card.pdf-card {
+      background: linear-gradient(180deg, #1c543f 0%, #163d2e 100%);
+      border-color: rgba(236, 201, 104, 0.35);
+    }
+
+    .version-tag {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .tag-gold {
+      background: var(--gold);
+      color: var(--gold-dark);
+    }
+
+    .tag-emerald {
+      background: #236950;
+      color: #a7f3d0;
+    }
+
+    .version-title {
+      font-size: 1.9rem;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+
+    /* Book Cover Mockup */
+    .book-mockup {
+      background: #fff;
+      color: #163a2c;
+      border-radius: 14px;
+      overflow: hidden;
+      max-width: 280px;
+      margin: 0 auto 20px;
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+      border: 4px solid #e2e8f0;
+    }
+
+    .book-top {
+      background: #1b543f;
+      color: #fff;
+      padding: 18px 14px 22px;
+      text-align: center;
+      position: relative;
+    }
+
+    .book-top small {
+      letter-spacing: 2px;
+      font-size: 0.65rem;
+      color: #cde3da;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .book-top .book-name {
+      font-size: 2.3rem;
+      color: #fff;
+    }
+
+    .book-top .book-sub {
+      font-size: 0.82rem;
+      color: var(--gold);
+    }
+
+    .book-bottom {
+      padding: 16px 14px 12px;
+      text-align: center;
+    }
+
+    .book-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 2.5px solid #1b543f;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 10px;
+      font-weight: 900;
+      font-size: 1.35rem;
+      line-height: 1.1;
+      color: #1b543f;
+    }
+
+    .book-circle span {
+      font-size: 0.55rem;
+      font-weight: 600;
+    }
+
+    .book-strips {
+      display: flex;
+      height: 8px;
+      margin-top: 10px;
+    }
+
+    .book-strips div { flex: 1; }
+
+    /* Interactive Demo Widget */
+    .demo-box {
+      background: rgba(11, 25, 19, 0.65);
+      border: 1.5px dashed rgba(255, 255, 255, 0.25);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 18px;
+    }
+
+    .demo-hint {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #d1fae5;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .prayer-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+    }
+
+    .prayer-table th {
+      background: #22664e;
+      color: #fff;
+      padding: 8px;
+      font-size: 0.88rem;
+    }
+
+    .prayer-table th:first-child { border-radius: 0 8px 8px 0; }
+    .prayer-table th:last-child { border-radius: 8px 0 0 8px; }
+
+    .prayer-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-weight: 700;
+    }
+
+    .check-circle {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid #3c876c;
+      background: transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: transparent;
+      font-size: 1rem;
+      font-weight: 900;
+      transition: all 0.18s ease;
+    }
+
+    .check-circle.checked {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--gold-dark);
+      transform: scale(1.08);
+    }
+
+    .demo-counter {
+      text-align: left;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 10px;
+      font-weight: 700;
+    }
+
+    .checklist {
+      list-style: none;
+      margin-bottom: 20px;
+    }
+
+    .checklist li {
+      padding: 5px 0;
+      font-size: 0.95rem;
+      color: #eef5f1;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .checklist li::before {
+      content: "✓";
+      color: var(--gold);
+      font-weight: 900;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .price-now {
+      font-size: 2.3rem;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .price-old {
+      font-size: 1.15rem;
+      color: #9bb3a8;
+      text-decoration: line-through;
+    }
+
+    .price-badge {
+      background: #b83258;
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .offer-note {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    .btn-emerald {
+      background: #236950;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 14px;
+      padding: 14px 20px;
+      font-family: 'Cairo', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s ease;
+    }
+
+    .btn-emerald:hover {
+      background: #2b7e60;
+    }
+
+    /* How to Order Steps */
+    .step-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 18px 20px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .step-num {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #236950;
+      color: #fff;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .step-card h4 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 3px;
+    }
+
+    .step-card p {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+    }
+
+    /* Payment & Delivery */
+    .voda-card {
+      background: linear-gradient(135deg, #c81e1e 0%, #991b1b 100%);
+      border-radius: 20px;
+      padding: 24px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 12px 28px rgba(185, 28, 28, 0.3);
+    }
+
+    .voda-card h3 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .voda-num {
+      font-size: 1.85rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      direction: ltr;
+      text-align: right;
+      margin-bottom: 8px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .voda-card p {
+      font-size: 0.92rem;
+      color: #fee2e2;
+      margin-bottom: 16px;
+    }
+
+    .btn-copy {
+      background: #fff;
+      color: #991b1b;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 22px;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .btn-copy:active {
+      transform: scale(0.96);
+    }
+
+    .drive-card {
+      background: var(--bg-card);
+      border: 1.5px solid #2b599c;
+      border-radius: 20px;
+      padding: 22px 20px;
+    }
+
+    .drive-card h3 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .drive-card p {
+      color: var(--text-muted);
+      font-size: 0.93rem;
+    }
+
+    /* Feedback Form */
+    .feedback-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 22px;
+      padding: 24px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .color-bar-top {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      display: flex;
+    }
+
+    .color-bar-top div { flex: 1; }
+
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0 18px;
+    }
+
+    .chip-btn {
+      background: transparent;
+      border: 1.5px solid rgba(255, 255, 255, 0.18);
+      color: #e2e8f0;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .chip-btn.active {
+      background: #236950;
+      border-color: #349c77;
+      color: #fff;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      background: #0f221b;
+      border: 1.5px solid rgba(255, 255, 255, 0.14);
+      border-radius: 14px;
+      padding: 12px 14px;
+      color: #fff;
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--gold);
+    }
+
+    .char-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin: 6px 0 16px;
+    }
+
+    .btn-whatsapp {
+      background: var(--whatsapp);
+      color: #062b16;
+      border: none;
+      border-radius: 14px;
+      padding: 14px 20px;
+      width: 100%;
+      font-family: 'Cairo', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 900;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: filter 0.2s ease;
+    }
+
+    .btn-whatsapp:hover {
+      filter: brightness(1.06);
+    }
+
+    /* FAQ Accordion */
+    .faq-item {
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .faq-q {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-family: 'Cairo', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      padding: 18px 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      text-align: right;
+    }
+
+    .faq-icon {
+      color: var(--gold);
+      font-size: 1.4rem;
+      font-weight: 900;
+      transition: transform 0.25s ease;
+    }
+
+    .faq-item.open .faq-icon {
+      transform: rotate(45deg);
+    }
+
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+      color: var(--text-muted);
+      font-size: 0.94rem;
+      padding: 0 4px;
+    }
+
+    .faq-item.open .faq-a {
+      max-height: 220px;
+      padding-bottom: 18px;
+    }
+
+    /* Final CTA & Footer */
+    .final-cta {
+      position: relative;
+      background: #1f5c45;
+      padding: 46px 18px;
+      text-align: center;
+      overflow: hidden;
+      margin-top: 24px;
+    }
+
+    .final-cta h2 {
+      font-size: 2.3rem;
+      color: #0b1c15;
+      margin-bottom: 8px;
+    }
+
+    .final-cta p {
+      color: #e6f2ec;
+      margin-bottom: 22px;
+      font-size: 1rem;
+    }
+
+    .footer {
+      padding: 32px 18px 24px;
+      text-align: center;
+      border-top: 4px solid;
+      border-image: linear-gradient(90deg, #c23664, #2962ff, #7b3fe4, #2e8b57, #e06d26) 1;
+    }
+
+    .hadith {
+      font-size: 1.5rem;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .brand-foot {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .admin-trigger {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: var(--text-muted);
+      padding: 3px 10px;
+      border-radius: 8px;
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+
+    .admin-trigger:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* Bottom Sticky Bar */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 950;
+      background: rgba(12, 28, 22, 0.96);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border-subtle);
+      padding: 12px 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .bottom-price {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .bottom-price span {
+      color: var(--gold);
+      font-size: 1.2rem;
+      font-weight: 900;
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 1200;
+      background: rgba(5, 14, 10, 0.82);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #142a21;
+      border: 1.5px solid rgba(236, 201, 104, 0.3);
+      border-radius: 22px;
+      width: 100%;
+      max-width: 460px;
+      max-height: 92vh;
+      overflow-y: auto;
+      padding: 24px 20px;
+      position: relative;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+      animation: popIn 0.22s ease;
+    }
+
+    .modal-box.admin-box {
+      max-width: 780px;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    .ver-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 14px 0 18px;
+    }
+
+    .ver-opt {
+      background: #0f221b;
+      border: 2px solid rgba(255, 255, 255, 0.14);
+      border-radius: 14px;
+      padding: 12px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.18s ease;
+    }
+
+    .ver-opt.selected {
+      border-color: var(--gold);
+      background: rgba(236, 201, 104, 0.12);
+    }
+
+    .ver-opt strong {
+      display: block;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    .ver-opt span {
+      color: var(--gold);
+      font-weight: 900;
+      font-size: 1.15rem;
+    }
+
+    .mini-voda {
+      background: rgba(185, 28, 28, 0.22);
+      border: 1px solid rgba(248, 113, 113, 0.35);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 14px 0;
+      font-size: 0.88rem;
+    }
+
+    /* Admin Dashboard Styles */
+    .admin-tabs {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 12px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+    }
+
+    .admin-tab {
+      background: #0f221b;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 7px 14px;
+      border-radius: 10px;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .admin-tab.active {
+      background: var(--gold);
+      color: var(--gold-dark);
+      border-color: var(--gold);
+    }
+
+    .admin-kpis {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .kpi-card {
+      background: #0f221b;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .kpi-card .num {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--gold);
+    }
+
+    .kpi-card .lbl {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .order-item {
+      background: #0f221b;
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+
+    .order-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .status-badge {
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+
+    .st-new { background: #1d4ed8; color: #fff; }
+    .st-paid { background: #b45309; color: #fff; }
+    .st-done { background: #15803d; color: #fff; }
+
+    .order-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .btn-xs {
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: #193329;
+      color: #fff;
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-xs:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .toast {
+      position: fixed;
+      top: 56px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: var(--gold);
+      color: var(--gold-dark);
+      padding: 10px 22px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 2000;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="toast" class="toast">تم النسخ بنجاح!</div>
+
+  <!-- Top Sticky Countdown -->
+  <div class="top-bar" id="topOfferBar">
+    <span class="label">عرض الافتتاح بينتهي بعد</span>
+    <span class="countdown-pill" id="countdownTimer">13 يوم 07:12:27</span>
+  </div>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="circles-bg"></div>
+    <div class="hero-inner">
+      <h1 class="hero-logo ruqaa">ملتزم</h1>
+      <p class="hero-tagline ruqaa">ده مش بلانر يومي عادي.. ده أسلوب حياة</p>
+      <p class="hero-desc">
+        ٣١ يوم، وكل يوم ورقة بلانر وورقة فضفضة: عبادتك ودراستك ورياضتك ومهاراتك ولغاتك، وتعلّم عليها بإيدك.
+      </p>
+
+      <div class="badges-wrap">
+        <span class="pill-badge b-skills">Skills</span>
+        <span class="pill-badge b-study">Study</span>
+        <span class="pill-badge b-sports">Sports</span>
+        <span class="pill-badge b-worship">Worship</span>
+        <span class="pill-badge b-lang">Languages</span>
+      </div>
+
+      <div class="hero-actions">
+        <button class="btn-gold" onclick="openOrderModal('pdf')">اطلب دلوقتي</button>
+        <a href="#toc-section" class="btn-outline">شوف الفهرس</a>
+      </div>
+
+      <div class="hero-perks">
+        <span>اطلب من واتساب في دقيقة</span>
+        <span>ادفع فودافون كاش</span>
+        <span>تستلم على Google Drive</span>
+      </div>
+
+      <!-- Planner Spread Preview -->
+      <div class="spread-card">
+        <div class="spread-grid">
+          <!-- Right Page: Index -->
+          <div class="sheet-mock">
+            <div class="sheet-header">الفهرس</div>
+            <div class="mini-box">
+              <span class="mini-box-title" style="background:#257a63">البلانر اليومي (٣١ يوم)</span>
+              <div class="mini-lines"><div></div></div>
+            </div>
+            <div class="mini-box">
+              <span class="mini-box-title" style="background:#c95d22">المتابعة الشهرية والروتين</span>
+              <div class="mini-lines"><div></div><div></div></div>
+            </div>
+            <div class="mini-box">
+              <span class="mini-box-title" style="background:#7344bd">الأذكار والأدعية</span>
+              <div class="mini-lines"><div></div><div></div></div>
+            </div>
+            <div class="mini-box">
+              <span class="mini-box-title" style="background:#2a599c">معرفة الله والسيرة</span>
+              <div class="mini-lines"><div></div></div>
+            </div>
+          </div>
+
+          <!-- Left Page: First Day Planner -->
+          <div class="sheet-mock">
+            <div class="sheet-header" style="background:#194d39">بلانر اليوم</div>
+            <div class="mini-box">
+              <span class="mini-box-title" style="background:#2e8b57">Worship · العبادة</span>
+              <div class="mini-lines"><div></div><div></div></div>
+            </div>
+            <div class="mini-box">
+              <span class="mini-box-title" style="background:#7b3fe4">Study & Skills</span>
+              <div class="mini-lines"><div></div><div></div></div>
+            </div>
+            <div class="mini-box">
+              <span class="mini-box-title" style="background:#e06d26">Sports & Habits</span>
+              <div class="mini-lines"><div></div></div>
+            </div>
+            <div class="mini-box">
+              <span class="mini-box-title" style="background:#c23664">تقييم اليوم %</span>
+              <div class="mini-lines"><div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="spread-labels">
+        <div class="spread-pill">الفهرس</div>
+        <div class="spread-pill">أول يوم بلانر</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Stats Section -->
+    <section class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-num">124</div>
+          <div class="stat-label">صفحة</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">31</div>
+          <div class="stat-label">يوم التزام</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">114</div>
+          <div class="stat-label">سورة في بستان القرآن</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">A4 + A5</div>
+          <div class="stat-label">مقاسين للطباعة</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Multazim -->
+    <section class="sec-block">
+      <h2 class="sec-title ruqaa">ليه ملتزم؟</h2>
+      <p class="sec-sub">لأن الالتزام بيتبني بخطوة صغيرة كل يوم، والبلانر ده بيخلّيها قدامك.</p>
+
+      <div class="feature-card fc-teal">
+        <h3>يومك في صفحة واحدة</h3>
+        <p>الصلاة والأذكار والورد والرياضة والمذاكرة والمهارات واللغات، كلها قدامك من غير ما تفتح خمس تطبيقات.</p>
+      </div>
+
+      <div class="feature-card fc-orange">
+        <h3>علامة صح بتحمّسك</h3>
+        <p>دواير تعلّم عليها كل ما تخلّص حاجة، وتقييم لنهاية اليوم بنسبة مئوية.</p>
+      </div>
+
+      <div class="feature-card fc-purple">
+        <h3>اطبعه أو سجّل أونلاين</h3>
+        <p>نسخة PDF للطباعة بمقاس A4 أو A5 كراسة، ونسخة تفاعلية تعلّم فيها من الموبايل.</p>
+      </div>
+    </section>
+
+    <!-- Table of Contents -->
+    <section class="sec-block" id="toc-section">
+      <h2 class="sec-title ruqaa">إيه اللي جوه البلانر؟</h2>
+      <p class="sec-sub">ده الفهرس بالظبط زي ما هو في الكتاب، بنفس الترتيب.</p>
+
+      <!-- 1 -->
+      <div class="toc-card c-teal">
+        <div class="toc-header">البلانر اليومي (٣١ يوم)</div>
+        <div class="toc-body">
+          <div class="toc-row">
+            <span class="toc-topic">بلانر اليوم ١ – ٣١ (كل يوم ورقتين: بلانر + فضفضة)</span>
+            <span class="toc-dots"></span>
+            <span class="toc-page">٣–٣٣</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2 -->
+      <div class="toc-card c-orange">
+        <div class="toc-header">المتابعة الشهرية والروتين</div>
+        <div class="toc-body">
+          <div class="toc-row"><span class="toc-topic">تقسيم الوقت والنوم بالسنة</span><span class="toc-dots"></span><span class="toc-page">٣٤</span></div>
+          <div class="toc-row"><span class="toc-topic">دعاء محتاجه النهارده</span><span class="toc-dots"></span><span class="toc-page">٣٥</span></div>
+          <div class="toc-row"><span class="toc-topic">السنن المهجورة</span><span class="toc-dots"></span><span class="toc-page">٣٦–٣٧</span></div>
+          <div class="toc-row"><span class="toc-topic">السنن اللي أحييتها</span><span class="toc-dots"></span><span class="toc-page">٣٨–٣٩</span></div>
+          <div class="toc-row"><span class="toc-topic">ميزانية الشهر</span><span class="toc-dots"></span><span class="toc-page">٤٠</span></div>
+        </div>
+      </div>
+
+      <!-- 3 -->
+      <div class="toc-card c-purple">
+        <div class="toc-header">الأذكار والأدعية وآداب الأكل</div>
+        <div class="toc-body">
+          <div class="toc-row"><span class="toc-topic">أذكار الصباح</span><span class="toc-dots"></span><span class="toc-page">٤١</span></div>
+          <div class="toc-row"><span class="toc-topic">أذكار المساء</span><span class="toc-dots"></span><span class="toc-page">٤٢</span></div>
+          <div class="toc-row"><span class="toc-topic">أدعية مختارة</span><span class="toc-dots"></span><span class="toc-page">٤٣</span></div>
+          <div class="toc-row"><span class="toc-topic">الاستخارة وأدعية المواقف والرقية</span><span class="toc-dots"></span><span class="toc-page">٤٤</span></div>
+          <div class="toc-row"><span class="toc-topic">آداب الأكل والشرب والدعاء</span><span class="toc-dots"></span><span class="toc-page">٤٥</span></div>
+        </div>
+      </div>
+
+      <!-- 4 -->
+      <div class="toc-card c-blue">
+        <div class="toc-header">معرفة الله والسيرة النبوية</div>
+        <div class="toc-body">
+          <div class="toc-row"><span class="toc-topic">أسماء الله الحسنى</span><span class="toc-dots"></span><span class="toc-page">٤٦</span></div>
+          <div class="toc-row"><span class="toc-topic">شرح أسماء الله الحسنى</span><span class="toc-dots"></span><span class="toc-page">٤٧–٥٣</span></div>
+          <div class="toc-row"><span class="toc-topic">أركان الإسلام والإيمان وبيت النبي ﷺ</span><span class="toc-dots"></span><span class="toc-page">٥٤</span></div>
+          <div class="toc-row"><span class="toc-topic">صفات النبي محمد بن عبد الله ﷺ وشكله</span><span class="toc-dots"></span><span class="toc-page">٥٥</span></div>
+          <div class="toc-row"><span class="toc-topic">أخلاق النبي ﷺ وروتينه اليومي (١)</span><span class="toc-dots"></span><span class="toc-page">٥٦</span></div>
+          <div class="toc-row"><span class="toc-topic">أخلاق النبي ﷺ وتعامله مع الناس (٢)</span><span class="toc-dots"></span><span class="toc-page">٥٧</span></div>
+          <div class="toc-row"><span class="toc-topic">أخلاق كبار الصحابة مع النبي ﷺ</span><span class="toc-dots"></span><span class="toc-page">٥٨</span></div>
+          <div class="toc-row"><span class="toc-topic">غزوات النبي ﷺ</span><span class="toc-dots"></span><span class="toc-page">٥٩</span></div>
+        </div>
+      </div>
+
+      <!-- 5 -->
+      <div class="toc-card c-crimson">
+        <div class="toc-header">الطهارة وأحكام الحيض</div>
+        <div class="toc-body">
+          <div class="toc-row"><span class="toc-topic">الوضوء الصح</span><span class="toc-dots"></span><span class="toc-page">٦٠</span></div>
+          <div class="toc-row"><span class="toc-topic">نواقض الوضوء</span><span class="toc-dots"></span><span class="toc-page">٦١</span></div>
+          <div class="toc-row"><span class="toc-topic">المسح على الخفين والتيمم</span><span class="toc-dots"></span><span class="toc-page">٦٢</span></div>
+          <div class="toc-row"><span class="toc-topic">أحكام خاصة بالبنت</span><span class="toc-dots"></span><span class="toc-page">٦٣–٦٤</span></div>
+        </div>
+      </div>
+
+      <!-- 6 -->
+      <div class="toc-card c-cyan">
+        <div class="toc-header">الصلاة</div>
+        <div class="toc-body">
+          <div class="toc-row"><span class="toc-topic">من الأذان لنهاية الصلاة</span><span class="toc-dots"></span><span class="toc-page">٦٥–٦٦</span></div>
+          <div class="toc-row"><span class="toc-topic">طريقة الصلاة</span><span class="toc-dots"></span><span class="toc-page">٦٧–٦٨</span></div>
+          <div class="toc-row"><span class="toc-topic">تدبر الصلاة</span><span class="toc-dots"></span><span class="toc-page">٦٩</span></div>
+          <div class="toc-row"><span class="toc-topic">أذكار ما بعد الصلاة</span><span class="toc-dots"></span><span class="toc-page">٧٠</span></div>
+          <div class="toc-row"><span class="toc-topic">ثواب الصلاة وعقاب تركها</span><span class="toc-dots"></span><span class="toc-page">٧١</span></div>
+          <div class="toc-row"><span class="toc-topic">قضاء الصلاة وقصرها</span><span class="toc-dots"></span><span class="toc-page">٧٢</span></div>
+          <div class="toc-row"><span class="toc-topic">قيام الليل</span><span class="toc-dots"></span><span class="toc-page">٧٣</span></div>
+          <div class="toc-row"><span class="toc-topic">الفجر وركعتا السنة</span><span class="toc-dots"></span><span class="toc-page">٧٤</span></div>
+          <div class="toc-row"><span class="toc-topic">حي على الفلاح</span><span class="toc-dots"></span><span class="toc-page">٧٥</span></div>
+        </div>
+      </div>
+
+      <!-- 7 -->
+      <div class="toc-card c-amber">
+        <div class="toc-header">الصوم والحج والأعياد</div>
+        <div class="toc-body">
+          <div class="toc-row"><span class="toc-topic">الصوم وآدابه وأوقاته</span><span class="toc-dots"></span><span class="toc-page">٧٦</span></div>
+          <div class="toc-row"><span class="toc-topic">بلانر رمضان</span><span class="toc-dots"></span><span class="toc-page">٧٧–٧٨</span></div>
+          <div class="toc-row"><span class="toc-topic">العمرة والمحظورات والنظافة (١)</span><span class="toc-dots"></span><span class="toc-page">٧٩</span></div>
+          <div class="toc-row"><span class="toc-topic">الحج: خطوة بخطوة (٢)</span><span class="toc-dots"></span><span class="toc-page">٨٠</span></div>
+          <div class="toc-row"><span class="toc-topic">الحج والعمرة (٣)</span><span class="toc-dots"></span><span class="toc-page">٨١</span></div>
+          <div class="toc-row"><span class="toc-topic">يوم عرفة: إزاي تستغله صح</span><span class="toc-dots"></span><span class="toc-page">٨٢</span></div>
+          <div class="toc-row"><span class="toc-topic">صلاة العيدين</span><span class="toc-dots"></span><span class="toc-page">٨٣</span></div>
+        </div>
+      </div>
+
+      <!-- 8 -->
+      <div class="toc-card c-crimson">
+        <div class="toc-header">الآخرة والتوبة وتزكية النفس</div>
+        <div class="toc-body">
+          <div class="toc-row"><span class="toc-topic">الجنة والنار</span><span class="toc-dots"></span><span class="toc-page">٨٤</span></div>
+          <div class="toc-row"><span class="toc-topic">نعيم الجنة في القرآن</span><span class="toc-dots"></span><span class="toc-page">٨٥</span></div>
+          <div class="toc-row"><span class="toc-topic">عذاب النار في القرآن</span><span class="toc-dots"></span><span class="toc-page">٨٦</span></div>
+          <div class="toc-row"><span class="toc-topic">التوبة وصلاة التوبة</span><span class="toc-dots"></span><span class="toc-page">٨٧</span></div>
+          <div class="toc-row"><span class="toc-topic">وقفة مع النفس</span><span class="toc-dots"></span><span class="toc-page">٨٨</span></div>
+          <div class="toc-row"><span class="toc-topic">الشيطان: العدو الأبدي للإنسان</span><span class="toc-dots"></span><span class="toc-page">٨٩</span></div>
+          <div class="toc-row"><span class="toc-topic">عادات لازم نتجنبها</span><span class="toc-dots"></span><span class="toc-page">٩٠–٩١</span></div>
+          <div class="toc-row"><span class="toc-topic">السبع الموبقات وعقوباتها وكفاراتها</span><span class="toc-dots"></span><span class="toc-page">٩٢</span></div>
+          <div class="toc-row"><span class="toc-topic">الجنازة</span><span class="toc-dots"></span><span class="toc-page">٩٣</span></div>
+        </div>
+      </div>
+
+      <!-- 9 -->
+      <div class="toc-card c-crimson">
+        <div class="toc-header">الحجاب والحياء والآداب وصفحات الشباب</div>
+        <div class="toc-body">
+          <div class="toc-row"><span class="toc-topic">العورة والمحارم والرضاعة</span><span class="toc-dots"></span><span class="toc-page">٩٤</span></div>
+          <div class="toc-row"><span class="toc-topic">الحجاب</span><span class="toc-dots"></span><span class="toc-page">٩٥–٩٦</span></div>
+          <div class="toc-row"><span class="toc-topic">نصيحة للشباب</span><span class="toc-dots"></span><span class="toc-page">٩٧–٩٨</span></div>
+          <div class="toc-row"><span class="toc-topic">الغيبة والنميمة</span><span class="toc-dots"></span><span class="toc-page">٩٩</span></div>
+          <div class="toc-row"><span class="toc-topic">الموسيقى والأغاني</span><span class="toc-dots"></span><span class="toc-page">١٠٠</span></div>
+          <div class="toc-row"><span class="toc-topic">طريقة الكلام: هذّب لسانك</span><span class="toc-dots"></span><span class="toc-page">١٠١</span></div>
+        </div>
+      </div>
+
+      <!-- 10 -->
+      <div class="toc-card c-teal">
+        <div class="toc-header">الأسرة والمعاملات</div>
+        <div class="toc-body">
+          <div class="toc-row"><span class="toc-topic">حقوق الوالدين والأرحام والجيران</span><span class="toc-dots"></span><span class="toc-page">١٠٢</span></div>
+          <div class="toc-row"><span class="toc-topic">الزواج والأسرة</span><span class="toc-dots"></span><span class="toc-page">١٠٣</span></div>
+          <div class="toc-row"><span class="toc-topic">الكسب الحلال والربا والزكاة</span><span class="toc-dots"></span><span class="toc-page">١٠٤</span></div>
+          <div class="toc-row"><span class="toc-topic">احسب زكاتك والصدقة الجارية</span><span class="toc-dots"></span><span class="toc-page">١٠٥</span></div>
+        </div>
+      </div>
+
+      <!-- 11 -->
+      <div class="toc-card c-purple">
+        <div class="toc-header">الصحة والدراسة والمعرفة</div>
+        <div class="toc-body">
+          <div class="toc-row"><span class="toc-topic">روتين النظافة الشخصية</span><span class="toc-dots"></span><span class="toc-page">١٠٦</span></div>
+          <div class="toc-row"><span class="toc-topic">القضاء على تعفن الدماغ</span><span class="toc-dots"></span><span class="toc-page">١٠٧</span></div>
+          <div class="toc-row"><span class="toc-topic">التحاليل والفيتامينات</span><span class="toc-dots"></span><span class="toc-page">١٠٨</span></div>
+          <div class="toc-row"><span class="toc-topic">طريقة المذاكرة</span><span class="toc-dots"></span><span class="toc-page">١٠٩</span></div>
+          <div class="toc-row"><span class="toc-topic">بودكاست مفيدة</span><span class="toc-dots"></span><span class="toc-page">١١٠</span></div>
+        </div>
+      </div>
+
+      <!-- 12 -->
+      <div class="toc-card c-orange">
+        <div class="toc-header">القرآن الكريم</div>
+        <div class="toc-body">
+          <div class="toc-row"><span class="toc-topic">بستان القرآن الكريم</span><span class="toc-dots"></span><span class="toc-page">١١١</span></div>
+          <div class="toc-row"><span class="toc-topic">جدول حفظ القرآن</span><span class="toc-dots"></span><span class="toc-page">١١٢–١٢٢</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Choose Your Version -->
+    <section class="sec-block" id="versions-section">
+      <h2 class="sec-title ruqaa">اختار نسختك</h2>
+      <p class="sec-sub">الاتنين نفس البلانر ونفس الصفحات. الفرق في طريقة الاستخدام.</p>
+
+      <!-- PDF Version -->
+      <div class="version-card pdf-card">
+        <span class="version-tag tag-gold">للطباعة</span>
+        <h3 class="version-title ruqaa">نسخة PDF</h3>
+
+        <div class="book-mockup">
+          <div class="book-top">
+            <small>DAILY PLANNER</small>
+            <div class="book-name ruqaa">ملتزم</div>
+            <div class="book-sub ruqaa">ده مش بلانر يومي عادي.. ده أسلوب حياة</div>
+          </div>
+          <div class="book-bottom">
+            <div class="book-circle">31<span>daily sheets</span></div>
+            <div style="font-size:0.65rem;color:#475569;font-style:italic">
+              The most beloved deeds are the most consistent, even if small.
+            </div>
+            <div class="book-strips">
+              <div style="background:#2e8b57"></div>
+              <div style="background:#e06d26"></div>
+              <div style="background:#7b3fe4"></div>
+              <div style="background:#2962ff"></div>
+              <div style="background:#c23664"></div>
+            </div>
+          </div>
+        </div>
+
+        <ul class="checklist">
+          <li>ملفين: A4 و A5 (كراسة صفحة بصفحة بترتيب الكتاب)</li>
+          <li>اطبعها وش وضهر زي الكراسة</li>
+          <li>فيها خانات تعلّم وتكتب فيها من برنامج PDF</li>
+          <li>بتفتح على أي برنامج PDF</li>
+        </ul>
+
+        <div class="price-row">
+          <span class="price-now"><span id="displayPdfPrice">59</span> جنيه</span>
+          <span class="price-old"><span id="displayPdfOld">89</span> جنيه</span>
+          <span class="price-badge">سعر الافتتاح</span>
+        </div>
+        <p class="offer-note">العرض لحد <span id="displayOfferEnd">28 نوفمبر 2026</span> وبعدها يرجع السعر العادي</p>
+
+        <button class="btn-gold btn-full" onclick="openOrderModal('pdf')">اطلب نسخة PDF</button>
+      </div>
+
+      <!-- Interactive Version -->
+      <div class="version-card">
+        <span class="version-tag tag-emerald">تفاعلية</span>
+        <h3 class="version-title ruqaa">النسخة التفاعلية</h3>
+
+        <div class="demo-box">
+          <p class="demo-hint">جرّب بنفسك: اضغط على الدواير</p>
+          <table class="prayer-table">
+            <thead>
+              <tr>
+                <th>الصلاة</th>
+                <th>في وقتها</th>
+                <th>جماعة</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>الفجر</td>
+                <td><button type="button" class="check-circle" onclick="toggleDemo(this)">✓</button></td>
+                <td><button type="button" class="check-circle" onclick="toggleDemo(this)">✓</button></td>
+              </tr>
+              <tr>
+                <td>الظهر</td>
+                <td><button type="button" class="check-circle" onclick="toggleDemo(this)">✓</button></td>
+                <td><button type="button" class="check-circle" onclick="toggleDemo(this)">✓</button></td>
+              </tr>
+              <tr>
+                <td>العصر</td>
+                <td><button type="button" class="check-circle" onclick="toggleDemo(this)">✓</button></td>
+                <td><button type="button" class="check-circle" onclick="toggleDemo(this)">✓</button></td>
+              </tr>
+              <tr>
+                <td>المغرب</td>
+                <td><button type="button" class="check-circle" onclick="toggleDemo(this)">✓</button></td>
+                <td><button type="button" class="check-circle" onclick="toggleDemo(this)">✓</button></td>
+              </tr>
+              <tr>
+                <td>العشاء</td>
+                <td><button type="button" class="check-circle" onclick="toggleDemo(this)">✓</button></td>
+                <td><button type="button" class="check-circle" onclick="toggleDemo(this)">✓</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="demo-counter" id="demoCounter">علّمت 0 من 10</div>
+        </div>
+
+        <ul class="checklist">
+          <li>تعلّم بالضغط وتكتب في الخانات من الموبايل أو الكمبيوتر</li>
+          <li>اللي سجلته بيتحفظ لوحده على جهازك</li>
+          <li>تطلّع منه PDF بكل اللي كتبته (A4 أو A5)</li>
+        </ul>
+
+        <div class="price-row">
+          <span class="price-now"><span id="displayIntPrice">49</span> جنيه</span>
+          <span class="price-old"><span id="displayIntOld">79</span> جنيه</span>
+          <span class="price-badge">سعر الافتتاح</span>
+        </div>
+        <p class="offer-note">العرض لحد <span id="displayOfferEnd2">28 نوفمبر 2026</span> وبعدها يرجع السعر العادي</p>
+
+        <button class="btn-emerald" onclick="openOrderModal('interactive')">اطلب النسخة التفاعلية</button>
+      </div>
+    </section>
+
+    <!-- How to Order -->
+    <section class="sec-block">
+      <h2 class="sec-title ruqaa">إزاي تطلب؟</h2>
+      <div style="margin-top:18px">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div>
+            <h4>اختار النسخة</h4>
+            <p>واضغط زرار الطلب.</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div>
+            <h4>ابعت طلبك</h4>
+            <p>بتكتب اسمك وإيميل Gmail وتفتح معاك واتساب برسالة جاهزة.</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div>
+            <h4>حوّل فودافون كاش</h4>
+            <p>وابعت صورة التحويل على نفس الشات.</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <div>
+            <h4>استلم على Drive</h4>
+            <p>بنفتح لك الملف على إيميلك أنت.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Payment & Delivery -->
+    <section class="sec-block">
+      <h2 class="sec-title ruqaa">الدفع والاستلام</h2>
+      <p class="sec-sub">بسيط ومن غير تعقيد.</p>
+
+      <div class="voda-card">
+        <h3>فودافون كاش</h3>
+        <div class="voda-num" id="displayVodaNum">01023825831</div>
+        <p>حوّل المبلغ على الرقم ده، وابعت صورة التحويل على واتساب.</p>
+        <button class="btn-copy" onclick="copyVoda()">انسخ الرقم</button>
+      </div>
+
+      <div class="drive-card">
+        <h3>الاستلام على Google Drive</h3>
+        <p>بعد التأكد من التحويل، بنشارك الملف مع إيميل Gmail اللي كتبته في الطلب. الملف بيتفتح من حسابك أنت.</p>
+      </div>
+    </section>
+
+    <!-- Feedback Section -->
+    <section class="sec-block">
+      <div class="feedback-card">
+        <div class="color-bar-top">
+          <div style="background:#c23664"></div>
+          <div style="background:#2962ff"></div>
+          <div style="background:#7b3fe4"></div>
+          <div style="background:#2e8b57"></div>
+          <div style="background:#e06d26"></div>
+        </div>
+
+        <h2 class="sec-title ruqaa" style="margin-top:6px">ناقصه حاجة؟ قولنا</h2>
+        <p class="sec-sub" style="margin-bottom:14px">
+          سواء اشتريت البلانر أو لسه بتتفرج، رأيك بيفرق. قولنا إيه اللي ناقص فيه، أو معلومة تحب نزودها، أو أي حاجة وقفت معاك.
+        </p>
+
+        <ul class="checklist" style="margin-bottom:18px">
+          <li>بنقرا كل رسالة بنفسنا.</li>
+          <li>بنختار الأنسب منها للتحديثات الجاية.</li>
+          <li>رسالتك بتوصلنا على واتساب ومش بتتنشر في الموقع.</li>
+        </ul>
+
+        <label class="form-label">رأيك في إيه؟</label>
+        <div class="chip-group" id="fbTypeGroup">
+          <button type="button" class="chip-btn active" onclick="selectChip(this, 'fbType')">حاجة ناقصة في البلانر</button>
+          <button type="button" class="chip-btn" onclick="selectChip(this, 'fbType')">معلومة أو صفحة تتزود</button>
+          <button type="button" class="chip-btn" onclick="selectChip(this, 'fbType')">مشكلة واجهتني</button>
+          <button type="button" class="chip-btn" onclick="selectChip(this, 'fbType')">اقتراح تاني</button>
+        </div>
+
+        <label class="form-label">اشتريت البلانر؟</label>
+        <div class="chip-group" id="fbBoughtGroup">
+          <button type="button" class="chip-btn active" onclick="selectChip(this, 'fbBought')">لسه ماشتريتش</button>
+          <button type="button" class="chip-btn" onclick="selectChip(this, 'fbBought')">أيوه اشتريته</button>
+        </div>
+
+        <label class="form-label" for="fbText">اكتب رأيك</label>
+        <textarea id="fbText" class="form-control" rows="4" maxlength="600" placeholder="مثال: نفسي في جدول مراجعة أسبوعي، أو دعاء معين، أو قسم عن..." oninput="updateCharCount()"></textarea>
+        <div class="char-row">
+          <span>اكتب بالتفصيل اللي تحبه.</span>
+          <span id="charCount">0 / 600</span>
+        </div>
+
+        <label class="form-label" for="fbName">اسمك (اختياري)</label>
+        <input type="text" id="fbName" class="form-control" placeholder="لو حابب نعرف مين صاحب الرأي" />
+
+        <button type="button" class="btn-whatsapp" onclick="submitFeedback()">ابعت رأيك على واتساب</button>
+        <p style="text-align:center;font-size:0.78rem;color:var(--text-muted);margin-top:8px">بنستخدم رسالتك لتحسين البلانر بس.</p>
+      </div>
+    </section>
+
+    <!-- FAQ Accordion -->
+    <section class="sec-block">
+      <h2 class="sec-title ruqaa" style="margin-bottom:14px">أسئلة بتتسأل</h2>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>أطبعه كراسة إزاي؟</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          بنديك ملفين جاهزين بمقاس A4 ومقاس A5 متنسّقين للطباعة وش وضهر (Duplex). بتروح لأي مكتبة وتقوله: «اطبعه وش وضهر وتدبيس كراسة من النص».
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>اللي بكتبه وبعلّم عليه بيتحفظ؟</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          أيوه! في النسخة التفاعلية كل خانة بتكتب فيها أو دايرة بتعلّم عليها بتتحفظ تلقائياً على جهازك من غير نت، وكمان تقدر تصدّرها PDF في أي وقت.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>بيشتغل على الموبايل؟</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          طبعاً، سواء نسخة الـ PDF أو النسخة التفاعلية مصممة تشتغل بسلاسة تامة على الموبايل والتابلت والكمبيوتر.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>لازم حساب Google عشان أستلم؟</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          أيوه، بنحتاج إيميل Gmail الخاص بيك عشان نعملك مشاركة (Share) آمنة للملف على Google Drive وتقدر تفتحه وتحمّله في أي وقت.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>إمتى بستلم الملف؟</span>
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-a">
+          بمجرد ما تبعت صورة تحويل فودافون كاش على واتساب، بنراجع التحويل ونفتحلك الملف على إيميلك في خلال دقائق.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Final CTA -->
+  <section class="final-cta">
+    <div class="circles-bg"></div>
+    <div style="position:relative;z-index:2;max-width:500px;margin:0 auto">
+      <h2 class="ruqaa">ابدأ يومك الأول النهارده</h2>
+      <p>٣١ يوم، وكل يوم خطوة صغيرة. اطلب نسختك دلوقتي.</p>
+      <button class="btn-gold" style="min-width:220px" onclick="openOrderModal('pdf')">اطلب دلوقتي</button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p class="hadith ruqaa">أحب الأعمال إلى الله أدومها وإن قل</p>
+    <div class="brand-foot">
+      <span>ملتزم · Daily Planner</span>
+      <button class="admin-trigger" onclick="openAdminAuth()">⚙️ لوحة الأدمن</button>
+    </div>
+  </footer>
+
+  <!-- Bottom Sticky Bar -->
+  <div class="bottom-bar">
+    <button class="btn-gold" style="padding:10px 26px" onclick="openOrderModal('pdf')">اطلب الآن</button>
+    <div class="bottom-price">ملتزم من <span id="stickyPrice">59</span> جنيه</div>
+  </div>
+
+  <!-- Order Modal -->
+  <div class="modal-backdrop" id="orderModal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('orderModal')">✕</button>
+      <h3 class="ruqaa" style="font-size:1.9rem;color:var(--gold);margin-bottom:4px">اطلب نسختك دلوقتي</h3>
+      <p style="font-size:0.88rem;color:var(--text-muted)">اختار النسخة واكتب بياناتك وهنفتحلك واتساب برسالة جاهزة</p>
+
+      <div class="ver-selector">
+        <div class="ver-opt selected" id="optPdf" onclick="selectOrderVersion('pdf')">
+          <strong>نسخة PDF للطباعة</strong>
+          <span><b id="modalPdfPrice">59</b> جنيه</span>
+        </div>
+        <div class="ver-opt" id="optInt" onclick="selectOrderVersion('interactive')">
+          <strong>النسخة التفاعلية</strong>
+          <span><b id="modalIntPrice">49</b> جنيه</span>
+        </div>
+      </div>
+
+      <label class="form-label" for="custName">اسمك بالكامل</label>
+      <input type="text" id="custName" class="form-control" style="margin-bottom:12px" placeholder="اكتب اسمك هنا" />
+
+      <label class="form-label" for="custEmail">إيميل Gmail (عشان نبعتلك عليه الملف)</label>
+      <input type="email" id="custEmail" class="form-control" dir="ltr" style="text-align:left" placeholder="example@gmail.com" />
+
+      <div class="mini-voda">
+        <div>
+          <span style="color:#fecaca;display:block;font-size:0.78rem">رقم التحويل فودافون كاش:</span>
+          <strong style="font-size:1.05rem;letter-spacing:0.5px" id="modalVodaNum">01023825831</strong>
+        </div>
+        <button type="button" class="btn-copy" style="padding:6px 14px;font-size:0.82rem" onclick="copyVoda()">نسخ</button>
+      </div>
+
+      <button type="button" class="btn-whatsapp" onclick="submitOrder()">تأكيد الطلب وفتح واتساب 💬</button>
+    </div>
+  </div>
+
+  <!-- Admin Login Modal -->
+  <div class="modal-backdrop" id="adminLoginModal">
+    <div class="modal-box" style="max-width:380px;text-align:center">
+      <button class="modal-close" onclick="closeModal('adminLoginModal')">✕</button>
+      <h3 class="ruqaa" style="font-size:1.8rem;color:var(--gold);margin-bottom:8px">دخول لوحة الأدمن</h3>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px">أدخل كلمة السر للمتابعة (الافتراضية: admin123)</p>
+      <input type="password" id="adminPassInput" class="form-control" style="text-align:center;margin-bottom:14px" placeholder="كلمة السر" onkeydown="if(event.key==='Enter') verifyAdmin()" />
+      <button class="btn-gold btn-full" onclick="verifyAdmin()">دخول</button>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard Modal -->
+  <div class="modal-backdrop" id="adminDashModal">
+    <div class="modal-box admin-box">
+      <button class="modal-close" onclick="closeModal('adminDashModal')">✕</button>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <h3 class="ruqaa" style="font-size:1.9rem;color:var(--gold)">لوحة تحكم ملتزم</h3>
+        <span id="cloudStatusBadge" style="font-size:0.75rem;padding:3px 10px;border-radius:999px;background:#236950;color:#fff">تخزين محلي (جاهز للربط السحابي)</span>
+      </div>
+
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchAdminTab('orders', this)">📦 الطلبات (<span id="tabOrdersCount">0</span>)</button>
+        <button class="admin-tab" onclick="switchAdminTab('feedback', this)">💬 الاقتراحات (<span id="tabFbCount">0</span>)</button>
+        <button class="admin-tab" onclick="switchAdminTab('settings', this)">⚙️ إعدادات الموقع والربط المجاني</button>
+      </div>
+
+      <!-- Tab 1: Orders -->
+      <div id="adminTab-orders">
+        <div class="admin-kpis">
+          <div class="kpi-card">
+            <div class="num" id="kpiTotalRev">0 ج</div>
+            <div class="lbl">إجمالي الإيرادات المؤكدة</div>
+          </div>
+          <div class="kpi-card">
+            <div class="num" id="kpiTotalOrders">0</div>
+            <div class="lbl">إجمالي الطلبات</div>
+          </div>
+          <div class="kpi-card">
+            <div class="num" id="kpiPendingOrders">0</div>
+            <div class="lbl">طلبات بانتظار المراجعة</div>
+          </div>
+        </div>
+        <div id="ordersListContainer"></div>
+      </div>
+
+      <!-- Tab 2: Feedback -->
+      <div id="adminTab-feedback" style="display:none">
+        <div id="feedbackListContainer"></div>
+      </div>
+
+      <!-- Tab 3: Settings -->
+      <div id="adminTab-settings" style="display:none">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div>
+            <label class="form-label">سعر نسخة PDF (جنيه)</label>
+            <input type="number" id="setPdfPrice" class="form-control" />
+          </div>
+          <div>
+            <label class="form-label">سعر التفاعلية (جنيه)</label>
+            <input type="number" id="setIntPrice" class="form-control" />
+          </div>
+          <div>
+            <label class="form-label">رقم فودافون كاش</label>
+            <input type="text" id="setVoda" class="form-control" dir="ltr" />
+          </div>
+          <div>
+            <label class="form-label">رقم الواتساب (بكود الدولة 20)</label>
+            <input type="text" id="setWhatsapp" class="form-control" dir="ltr" placeholder="201023825831" />
+          </div>
+          <div>
+            <label class="form-label">نص تاريخ انتهاء العرض</label>
+            <input type="text" id="setOfferText" class="form-control" />
+          </div>
+          <div>
+            <label class="form-label">تغيير كلمة سر الأدمن</label>
+            <input type="text" id="setAdminPass" class="form-control" />
+          </div>
+        </div>
+
+        <div style="background:#0f221b;border:1px dashed rgba(236,201,104,0.4);border-radius:14px;padding:14px;margin:14px 0">
+          <label class="form-label" style="color:var(--gold)">☁️ ربط قاعدة بيانات Firebase المجانية (اختياري لاستقبال طلبات كل الزوار أونلاين)</label>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px">
+            أنشئ مشروع مجاني على <b>console.firebase.google.com</b> وفعّل Firestore Database، ثم الصق كائن <code>firebaseConfig</code> بصيغة JSON هنا:
+          </p>
+          <textarea id="setFirebaseJson" class="form-control" rows="4" dir="ltr" style="font-family:monospace;font-size:0.8rem" placeholder='{"apiKey":"...","authDomain":"...","projectId":"..."}'></textarea>
+        </div>
+
+        <button class="btn-gold btn-full" onclick="saveAdminSettings()">حفظ التعديلات</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase Compat SDK (loads silently for free cloud sync if configured) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Default Config
+    const DEFAULT_CONFIG = {
+      pdfPrice: 59,
+      pdfOldPrice: 89,
+      intPrice: 49,
+      intOldPrice: 79,
+      vodaNum: '01023825831',
+      whatsappNum: '201023825831',
+      offerEndText: '28 نوفمبر 2026',
+      adminPass: 'admin123',
+      firebaseConfig: ''
+    };
+
+    let siteConfig = JSON.parse(localStorage.getItem('multazim_config')) || { ...DEFAULT_CONFIG };
+    let localOrders = JSON.parse(localStorage.getItem('multazim_orders')) || [];
+    let localFeedbacks = JSON.parse(localStorage.getItem('multazim_feedbacks')) || [];
+    let db = null;
+    let selectedVersion = 'pdf';
+    let fbType = 'حاجة ناقصة في البلانر';
+    let fbBought = 'لسه ماشتريتش';
+
+    // Initialize Firebase if configured
+    function initCloud() {
+      if (!siteConfig.firebaseConfig) return;
+      try {
+        const parsed = JSON.parse(siteConfig.firebaseConfig);
+        if (parsed && parsed.projectId) {
+          if (!firebase.apps.length) {
+            firebase.initializeApp(parsed);
+          }
+          db = firebase.firestore();
+          document.getElementById('cloudStatusBadge').textContent = 'متصل سحابياً بـ Firebase ☁️';
+          document.getElementById('cloudStatusBadge').style.background = '#15803d';
+
+          // Listen to live config updates
+          db.collection('settings').doc('main').onSnapshot((doc) => {
+            if (doc.exists) {
+              siteConfig = { ...siteConfig, ...doc.data() };
+              applyConfigToUI();
+            }
+          });
+        }
+      } catch (e) {
+        console.warn('Firebase config error:', e);
+      }
+    }
+
+    function applyConfigToUI() {
+      document.getElementById('displayPdfPrice').textContent = siteConfig.pdfPrice;
+      document.getElementById('displayPdfOld').textContent = siteConfig.pdfOldPrice;
+      document.getElementById('displayIntPrice').textContent = siteConfig.intPrice;
+      document.getElementById('displayIntOld').textContent = siteConfig.intOldPrice;
+      document.getElementById('modalPdfPrice').textContent = siteConfig.pdfPrice;
+      document.getElementById('modalIntPrice').textContent = siteConfig.intPrice;
+      document.getElementById('stickyPrice').textContent = Math.min(siteConfig.pdfPrice, siteConfig.intPrice);
+      document.getElementById('displayVodaNum').textContent = siteConfig.vodaNum;
+      document.getElementById('modalVodaNum').textContent = siteConfig.vodaNum;
+      document.getElementById('displayOfferEnd').textContent = siteConfig.offerEndText;
+      document.getElementById('displayOfferEnd2').textContent = siteConfig.offerEndText;
+    }
+
+    // Countdown Timer (13 days, 7 hours, 12 mins, 27 secs from load or fixed target)
+    let remainingSeconds = (13 * 86400) + (7 * 3600) + (12 * 60) + 27;
+    function updateCountdown() {
+      if (remainingSeconds <= 0) return;
+      remainingSeconds--;
+      const d = Math.floor(remainingSeconds / 86400);
+      const h = Math.floor((remainingSeconds % 86400) / 3600);
+      const m = Math.floor((remainingSeconds % 3600) / 60);
+      const s = remainingSeconds % 60;
+      const pad = (n) => String(n).padStart(2, '0');
+      document.getElementById('countdownTimer').textContent = `${d} يوم ${pad(h)}:${pad(m)}:${pad(s)}`;
+    }
+    setInterval(updateCountdown, 1000);
+
+    // Interactive Prayer Demo
+    function toggleDemo(btn) {
+      btn.classList.toggle('checked');
+      const count = document.querySelectorAll('.check-circle.checked').length;
+      document.getElementById('demoCounter').textContent = `علّمت ${count} من 10`;
+    }
+
+    // Copy Vodafone Cash Number
+    function copyVoda() {
+      copyText(siteConfig.vodaNum, 'تم نسخ رقم فودافون كاش: ' + siteConfig.vodaNum);
+    }
+
+    function copyText(text, msg) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(msg || 'تم النسخ!');
+      }).catch(() => {
+        const el = document.createElement('textarea');
+        el.value = text;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        showToast(msg || 'تم النسخ!');
+      });
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2600);
+    }
+
+    // Feedback Chips & Form
+    function selectChip(btn, group) {
+      btn.parentElement.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (group === 'fbType') fbType = btn.textContent.trim();
+      if (group === 'fbBought') fbBought = btn.textContent.trim();
+    }
+
+    function updateCharCount() {
+      const len = document.getElementById('fbText').value.length;
+      document.getElementById('charCount').textContent = `${len} / 600`;
+    }
+
+    async function submitFeedback() {
+      const text = document.getElementById('fbText').value.trim();
+      const name = document.getElementById('fbName').value.trim() || 'زائر';
+      if (!text) {
+        showToast('من فضلك اكتب رأيك أو اقتراحك الأول');
+        return;
+      }
+
+      const entry = {
+        id: Date.now(),
+        name,
+        type: fbType,
+        bought: fbBought,
+        text,
+        createdAt: new Date().toLocaleString('ar-EG')
+      };
+
+      localFeedbacks.unshift(entry);
+      localStorage.setItem('multazim_feedbacks', JSON.stringify(localFeedbacks));
+      if (db) {
+        try { await db.collection('feedbacks').add(entry); } catch (e) {}
+      }
+
+      const msg = `السلام عليكم، عندي رأي بخصوص بلانر ملتزم:
+• النوع: ${fbType}
+• الحالة: ${fbBought}
+• الاسم: ${name}
+• الرسالة: ${text}`;
+      window.open(`https://wa.me/${siteConfig.whatsappNum}?text=${encodeURIComponent(msg)}`, '_blank');
+      document.getElementById('fbText').value = '';
+      updateCharCount();
+    }
+
+    // FAQ Toggle
+    function toggleFaq(btn) {
+      btn.parentElement.classList.toggle('open');
+    }
+
+    // Order Modal
+    function openOrderModal(ver) {
+      selectOrderVersion(ver || 'pdf');
+      document.getElementById('orderModal').classList.add('show');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('show');
+    }
+
+    function selectOrderVersion(ver) {
+      selectedVersion = ver;
+      document.getElementById('optPdf').classList.toggle('selected', ver === 'pdf');
+      document.getElementById('optInt').classList.toggle('selected', ver === 'interactive');
+    }
+
+    async function submitOrder() {
+      const name = document.getElementById('custName').value.trim();
+      const email = document.getElementById('custEmail').value.trim();
+
+      if (!name) {
+        showToast('من فضلك اكتب اسمك');
+        return;
+      }
+      if (!email || !email.includes('@')) {
+        showToast('من فضلك اكتب إيميل Gmail صحيح للاستلام');
+        return;
+      }
+
+      const versionLabel = selectedVersion === 'pdf' ? 'نسخة PDF للطباعة (A4 + A5)' : 'النسخة التفاعلية';
+      const price = selectedVersion === 'pdf' ? Number(siteConfig.pdfPrice) : Number(siteConfig.intPrice);
+
+      const orderObj = {
+        id: Date.now(),
+        name,
+        email,
+        version: versionLabel,
+        price,
+        status: 'new',
+        createdAt: new Date().toLocaleString('ar-EG')
+      };
+
+      localOrders.unshift(orderObj);
+      localStorage.setItem('multazim_orders', JSON.stringify(localOrders));
+      if (db) {
+        try { await db.collection('orders').add(orderObj); } catch (e) {}
+      }
+
+      const waMsg = `السلام عليكم، عايز أطلب بلانر *ملتزم* 🌿
+
+• *النسخة:* ${versionLabel}
+• *المبلغ:* ${price} جنيه
+• *الاسم:* ${name}
+• *إيميل Gmail للاستلام:* ${email}
+
+جاري تحويل المبلغ على فودافون كاش (${siteConfig.vodaNum}) وهبعت صورة التحويل حالاً.`;
+      window.open(`https://wa.me/${siteConfig.whatsappNum}?text=${encodeURIComponent(waMsg)}`, '_blank');
+      closeModal('orderModal');
+    }
+
+    // Admin Auth & Dashboard
+    function openAdminAuth() {
+      document.getElementById('adminPassInput').value = '';
+      document.getElementById('adminLoginModal').classList.add('show');
+    }
+
+    function verifyAdmin() {
+      const pass = document.getElementById('adminPassInput').value;
+      if (pass === siteConfig.adminPass) {
+        closeModal('adminLoginModal');
+        openAdminDashboard();
+      } else {
+        showToast('كلمة السر غير صحيحة');
+      }
+    }
+
+    async function openAdminDashboard() {
+      document.getElementById('adminDashModal').classList.add('show');
+      // Populate settings fields
+      document.getElementById('setPdfPrice').value = siteConfig.pdfPrice;
+      document.getElementById('setIntPrice').value = siteConfig.intPrice;
+      document.getElementById('setVoda').value = siteConfig.vodaNum;
+      document.getElementById('setWhatsapp').value = siteConfig.whatsappNum;
+      document.getElementById('setOfferText').value = siteConfig.offerEndText;
+      document.getElementById('setAdminPass').value = siteConfig.adminPass;
+      document.getElementById('setFirebaseJson').value = siteConfig.firebaseConfig || '';
+
+      if (db) {
+        try {
+          const snap = await db.collection('orders').orderBy('id', 'desc').get();
+          localOrders = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
+          const fbSnap = await db.collection('feedbacks').orderBy('id', 'desc').get();
+          localFeedbacks = fbSnap.docs.map(d => ({ docId: d.id, ...d.data() }));
+        } catch (e) {}
+      }
+      renderAdminData();
+    }
+
+    function switchAdminTab(tab, btn) {
+      document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('adminTab-orders').style.display = tab === 'orders' ? 'block' : 'none';
+      document.getElementById('adminTab-feedback').style.display = tab === 'feedback' ? 'block' : 'none';
+      document.getElementById('adminTab-settings').style.display = tab === 'settings' ? 'block' : 'none';
+    }
+
+    function renderAdminData() {
+      document.getElementById('tabOrdersCount').textContent = localOrders.length;
+      document.getElementById('tabFbCount').textContent = localFeedbacks.length;
+
+      const confirmedRev = localOrders
+        .filter(o => o.status === 'paid' || o.status === 'done')
+        .reduce((acc, o) => acc + Number(o.price || 0), 0);
+      const pendingCount = localOrders.filter(o => o.status === 'new').length;
+
+      document.getElementById('kpiTotalRev').textContent = confirmedRev + ' ج';
+      document.getElementById('kpiTotalOrders').textContent = localOrders.length;
+      document.getElementById('kpiPendingOrders').textContent = pendingCount;
+
+      const ordersEl = document.getElementById('ordersListContainer');
+      if (!localOrders.length) {
+        ordersEl.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:24px">لا توجد طلبات مسجلة حتى الآن.</p>';
+      } else {
+        ordersEl.innerHTML = localOrders.map((o, idx) => {
+          const stClass = o.status === 'done' ? 'st-done' : (o.status === 'paid' ? 'st-paid' : 'st-new');
+          const stLabel = o.status === 'done' ? 'تم الإرسال على Drive' : (o.status === 'paid' ? 'تم الدفع' : 'طلب جديد');
+          return `
+            <div class="order-item">
+              <div class="order-top">
+                <strong>${o.name} — <span style="color:var(--gold)">${o.price} ج</span></strong>
+                <span class="status-badge ${stClass}">${stLabel}</span>
+              </div>
+              <div style="font-size:0.84rem;color:var(--text-muted)">
+                <div>النسخة: ${o.version}</div>
+                <div>Gmail: <span dir="ltr" style="color:#fff">${o.email}</span></div>
+                <div style="font-size:0.75rem">${o.createdAt || ''}</div>
+              </div>
+              <div class="order-actions">
+                <button class="btn-xs" onclick="copyText('${o.email}', 'تم نسخ الإيميل!')">📋 نسخ الإيميل</button>
+                <button class="btn-xs" onclick="updateOrderStatus(${idx}, 'paid')">💰 تأكيد الدفع</button>
+                <button class="btn-xs" onclick="updateOrderStatus(${idx}, 'done')">✅ تم الإرسال على Drive</button>
+                <button class="btn-xs" style="color:#fca5a5" onclick="deleteOrder(${idx})">🗑️ حذف</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      const fbEl = document.getElementById('feedbackListContainer');
+      if (!localFeedbacks.length) {
+        fbEl.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:24px">لا توجد اقتراحات بعد.</p>';
+      } else {
+        fbEl.innerHTML = localFeedbacks.map(f => `
+          <div class="order-item">
+            <div class="order-top">
+              <strong>${f.name} <span style="font-size:0.78rem;color:var(--gold)">(${f.type})</span></strong>
+              <span style="font-size:0.75rem;color:var(--text-muted)">${f.bought}</span>
+            </div>
+            <p style="font-size:0.9rem;margin-top:4px">${f.text}</p>
+          </div>
+        `).join('');
+      }
+    }
+
+    async function updateOrderStatus(idx, newStatus) {
+      const order = localOrders[idx];
+      if (!order) return;
+      order.status = newStatus;
+      localStorage.setItem('multazim_orders', JSON.stringify(localOrders));
+      if (db && order.docId) {
+        try { await db.collection('orders').doc(order.docId).update({ status: newStatus }); } catch (e) {}
+      }
+      renderAdminData();
+      showToast('تم تحديث حالة الطلب');
+    }
+
+    async function deleteOrder(idx) {
+      const order = localOrders[idx];
+      if (!order) return;
+      localOrders.splice(idx, 1);
+      localStorage.setItem('multazim_orders', JSON.stringify(localOrders));
+      if (db && order.docId) {
+        try { await db.collection('orders').doc(order.docId).delete(); } catch (e) {}
+      }
+      renderAdminData();
+      showToast('تم حذف الطلب');
+    }
+
+    async function saveAdminSettings() {
+      siteConfig.pdfPrice = Number(document.getElementById('setPdfPrice').value) || 59;
+      siteConfig.intPrice = Number(document.getElementById('setIntPrice').value) || 49;
+      siteConfig.vodaNum = document.getElementById('setVoda').value.trim() || '01023825831';
+      siteConfig.whatsappNum = document.getElementById('setWhatsapp').value.trim() || '201023825831';
+      siteConfig.offerEndText = document.getElementById('setOfferText').value.trim() || '28 نوفمبر 2026';
+      siteConfig.adminPass = document.getElementById('setAdminPass').value.trim() || 'admin123';
+      siteConfig.firebaseConfig = document.getElementById('setFirebaseJson').value.trim();
+
+      localStorage.setItem('multazim_config', JSON.stringify(siteConfig));
+      applyConfigToUI();
+      initCloud();
+
+      if (db) {
+        try {
+          const { firebaseConfig, adminPass, ...publicSettings } = siteConfig;
+          await db.collection('settings').doc('main').set(publicSettings, { merge: true });
+        } catch (e) {}
+      }
+      showToast('تم حفظ جميع الإعدادات بنجاح!');
+    }
+
+    // Boot
+    applyConfigToUI();
+    initCloud();
+    if (window.location.hash === '#admin') {
+      openAdminAuth();
+    }
+  </script>
+</body>
+</html>
