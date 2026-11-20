@@ -50,7 +50,7 @@ const products = [
  {id:'interactive',name:'النسخة التفاعلية',price:49,description:'نسخة رقمية تفاعلية تقدر تعلم وتكتب فيها من الموبايل أو الكمبيوتر.',features:['متابعة العادات والصلوات','تكتب وتحفظ تقدمك','تعمل على الموبايل والكمبيوتر']},
  {id:'printed',name:'النسخة المطبوعة',price:89,description:'كراسة مطبوعة جاهزة للاستخدام، السعر قابل للتعديل من لوحة التحكم.',features:['كراسة مطبوعة','ترتيب صفحات البلانر','تأكيد تفاصيل الشحن لاحقًا']}
 ];
-function Header(){return <header className="topbar"><a href="#home" className="brand"><span className="brand-mark">م</span><span>ملتزم<small>بلانر يومي بأسلوب حياة</small></span></a><nav><a href="#preview">المعاينة</a><a href="#contents">الفهرس</a><a href="#versions">النسخ والأسعار</a><a href="#faq">الأسئلة الشائعة</a></nav><a className="nav-cta" href="#versions">اطلب نسختك <ArrowLeft size={16}/></a></header>}
+function Header(){return <header className="topbar"><a href="#home" className="brand"><span className="brand-mark">م</span><span>ملتزم<small>بلانر يومي بأسلوب حياة</small></span></a><nav><a href="#preview">المعاينة</a><a href="#contents">الفهرس</a><a href="#versions">النسخ والأسعار</a><a href="#faq">الأسئلة الشائعة</a></nav><div className="nav-actions"><a className="nav-track" href="#tracking-entry"><ShieldCheck size={16}/>تتبع طلبك</a><a className="nav-cta" href="#versions">اطلب نسختك <ArrowLeft size={16}/></a></div></header>}
 
 function TrackingEntry() {
   const [trackingInput, setTrackingInput] = useState('');
@@ -76,10 +76,10 @@ function TrackingEntry() {
   }
 
   return (
-    <section className="tracking-entry wrap" aria-label="تتبع طلبك">
+    <section className="tracking-entry wrap" id="tracking-entry" aria-label="تتبع طلبك">
       <div className="tracking-entry-copy">
         <ShieldCheck size={22} />
-        <span><b>تتبع طلبك</b><small>الصق رابط المتابعة أو الرمز الخاص بطلبك</small></span>
+        <span><b>تتبع طلبك</b><small>الصق رابط المتابعة الخاص أو الرمز. رقم الطلب وحده لا يكفي.</small></span>
       </div>
       <form onSubmit={openTracking}>
         <input
@@ -235,6 +235,8 @@ function Order() {
   const [copiedPayment, setCopiedPayment] = useState('');
   const [proof, setProof] = useState(null);
   const [orderId, setOrderId] = useState('');
+  const [orderNumberCopied, setOrderNumberCopied] = useState(false);
+  const [orderNumberMessage, setOrderNumberMessage] = useState('');
   const [trackingToken, setTrackingToken] = useState('');
   const [trackingLinkCopied, setTrackingLinkCopied] = useState(false);
   const [trackingLinkMessage, setTrackingLinkMessage] = useState('');
@@ -321,6 +323,17 @@ function Order() {
     }
   }
 
+  async function copyOrderNumber() {
+    try {
+      await navigator.clipboard.writeText(orderId);
+      setOrderNumberCopied(true);
+      setOrderNumberMessage('تم نسخ رقم الطلب.');
+      window.setTimeout(() => setOrderNumberCopied(false), 1800);
+    } catch {
+      setOrderNumberMessage('تعذر النسخ تلقائيًا. حدّد رقم الطلب وانسخه يدويًا.');
+    }
+  }
+
   async function saveOrder(event) {
     event.preventDefault();
     if (!supabase || !proof) {
@@ -369,7 +382,16 @@ orderData.append('paymentMethod', selectedPaymentMethod?.label || form.payment);
         <div className="order-card success">
           <ShieldCheck size={42} />
           <h1>تم إرسال طلبك بنجاح</h1>
-          <p>رقم الطلب: {orderId}</p>
+          <div className="order-number-box">
+            <div>
+              <small>رقم الطلب</small>
+              <strong dir="ltr">{orderId}</strong>
+            </div>
+            <button className="btn btn-outline" type="button" onClick={copyOrderNumber}>
+              <Copy size={16} /> {orderNumberCopied ? 'تم النسخ' : 'نسخ رقم الطلب'}
+            </button>
+          </div>
+          {orderNumberMessage && <small className="tracking-link-message" role="status">{orderNumberMessage}</small>}
           <div className="tracking-link-box">
             <label htmlFor="customer-tracking-link">رابط المتابعة الخاص بطلبك</label>
             <input
@@ -383,7 +405,7 @@ orderData.append('paymentMethod', selectedPaymentMethod?.label || form.payment);
             />
             <div className="tracking-share-actions">
               <button className="btn btn-outline" type="button" onClick={() => copyTrackingUrl(trackingUrl)}>
-                <Copy size={16} /> {trackingLinkCopied ? 'تم النسخ' : 'نسخ الرابط'}
+                <Copy size={16} /> {trackingLinkCopied ? 'تم النسخ' : 'نسخ رابط متابعة الطلب'}
               </button>
               <a className="btn btn-green" href={`https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`} target="_blank" rel="noopener noreferrer">
                 <MessageCircle size={16} /> مشاركة عبر واتساب
@@ -391,8 +413,8 @@ orderData.append('paymentMethod', selectedPaymentMethod?.label || form.payment);
             </div>
             {trackingLinkMessage && <small className="tracking-link-message" role="status">{trackingLinkMessage}</small>}
           </div>
-          <Link className="btn btn-gold full" to={`/track-order#${encodeURIComponent(trackingToken)}`}>عرض حالة الطلب</Link>
-          <small>احتفظ بهذا الرابط أو أرسله لنفسك على واتساب. لا تحتاج إلى رقم الهاتف للمتابعة.</small>
+          <Link className="btn btn-gold full" to={`/track-order#${encodeURIComponent(trackingToken)}`}>متابعة الطلب بأمان</Link>
+          <small className="tracking-security-note">رقم الطلب الظاهر لا يكفي للوصول إلى حالة طلبك بأمان. احتفظ برابط المتابعة الخاص أو الرمز، أو أرسله لنفسك على واتساب.</small>
         </div>
       </div>
     );
@@ -516,7 +538,7 @@ function TrackOrder() {
       <div className="order-card">
         <span className="eyebrow">متابعة الطلب</span>
         <h1>تتبع طلبك</h1>
-        <p>أدخل الرمز الخاص أو الصق رابط المتابعة الذي احتفظت به.</p>
+        <p>الصق رابط المتابعة الخاص أو أدخل الرمز الذي احتفظت به. رقم الطلب وحده لا يكفي للوصول إلى بيانات الطلب.</p>
 
         <form className="order-form" onSubmit={searchOrder}>
           <label>
