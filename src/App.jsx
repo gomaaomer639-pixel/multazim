@@ -1,7 +1,40 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Routes, Route, Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, BookOpen, Check, ChevronDown, CircleHelp, Clock3, Download, FileText, Heart, Menu, MessageCircle, ShieldCheck, Sparkles, Star, X } from 'lucide-react';
+import { ArrowLeft, BookOpen, Check, ChevronDown, CircleHelp, Clock3, Copy, Download, FileText, Heart, Menu, MessageCircle, ShieldCheck, Sparkles, Star, X } from 'lucide-react';
 import { supabase } from './lib/supabase';
+
+const trackingTokenPattern = /^[A-Za-z0-9_-]{40,50}$/;
+
+function extractTrackingToken(value) {
+  const input = String(value || '').trim();
+  if (!input) return '';
+
+  try {
+    const url = new URL(input, window.location.origin);
+    if (url.pathname.replace(/\/+$/, '') === '/track-order' && url.hash) {
+      const token = decodeURIComponent(url.hash.slice(1));
+      return trackingTokenPattern.test(token) ? token : '';
+    }
+  } catch {
+    // Fall through so a raw token can be entered without a URL.
+  }
+
+  const token = input.startsWith('#') ? input.slice(1) : input;
+  return trackingTokenPattern.test(token) ? token : '';
+}
+
+function createTrackingUrl(token) {
+  return `${window.location.origin}/track-order#${encodeURIComponent(token)}`;
+}
+
+function getSafeDeliveryUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : '';
+  } catch {
+    return '';
+  }
+}
 
 const sections = [
   {title:'الصلاة',color:'teal',items:['من الأذان لنهاية الصلاة','طريقة الصلاة','تدبر الصلاة','أذكار ما بعد الصلاة','ثواب الصلاة وعقاب تركها','قضاء الصلاة وقصرها','قيام الليل','الفجر وركعتا السنة','حي على الفلاح']},
@@ -18,6 +51,56 @@ const products = [
  {id:'printed',name:'النسخة المطبوعة',price:89,description:'كراسة مطبوعة جاهزة للاستخدام، السعر قابل للتعديل من لوحة التحكم.',features:['كراسة مطبوعة','ترتيب صفحات البلانر','تأكيد تفاصيل الشحن لاحقًا']}
 ];
 function Header(){return <header className="topbar"><a href="#home" className="brand"><span className="brand-mark">م</span><span>ملتزم<small>بلانر يومي بأسلوب حياة</small></span></a><nav><a href="#preview">المعاينة</a><a href="#contents">الفهرس</a><a href="#versions">النسخ والأسعار</a><a href="#faq">الأسئلة الشائعة</a></nav><a className="nav-cta" href="#versions">اطلب نسختك <ArrowLeft size={16}/></a></header>}
+
+function TrackingEntry() {
+  const [trackingInput, setTrackingInput] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  function openTracking(event) {
+    event.preventDefault();
+    const input = trackingInput.trim();
+    if (!input) {
+      navigate('/track-order');
+      return;
+    }
+
+    const token = extractTrackingToken(input);
+    if (!token) {
+      setError('تأكد من نسخ رابط المتابعة أو الرمز كاملًا.');
+      return;
+    }
+
+    setError('');
+    navigate(`/track-order#${encodeURIComponent(token)}`);
+  }
+
+  return (
+    <section className="tracking-entry wrap" aria-label="تتبع طلبك">
+      <div className="tracking-entry-copy">
+        <ShieldCheck size={22} />
+        <span><b>تتبع طلبك</b><small>الصق رابط المتابعة أو الرمز الخاص بطلبك</small></span>
+      </div>
+      <form onSubmit={openTracking}>
+        <input
+          type="password"
+          inputMode="url"
+          autoComplete="off"
+          autoCapitalize="off"
+          spellCheck="false"
+          dir="ltr"
+          value={trackingInput}
+          onChange={event => { setTrackingInput(event.target.value); setError(''); }}
+          placeholder="رابط المتابعة أو الرمز"
+          aria-label="رابط المتابعة أو الرمز"
+          aria-describedby={error ? 'tracking-entry-error' : undefined}
+        />
+        <button className="btn btn-gold" type="submit">تتبع الطلب <ArrowLeft size={16} /></button>
+      </form>
+      {error && <small className="tracking-entry-error" id="tracking-entry-error" role="alert">{error}</small>}
+    </section>
+  );
+}
 function StickyBuy(){return <div className="sticky-buy"><span>ابدأ يومك بخطوة صغيرة</span><a className="btn btn-gold" href="#versions">اطلب الآن <ArrowLeft size={17}/></a></div>}
 function Hero(){return <section className="hero" id="home"><div className="hero-pattern"/><div className="hero-copy"><span className="eyebrow"><Sparkles size={15}/> 31 يوم من الالتزام بخطوة صغيرة</span><h1>مش لازم تغيّر حياتك<br/><em>في يوم واحد.</em></h1><p>كل يوم ورقة بلانر وورقة فضفضة: عبادتك، دراستك، رياضتك، مهاراتك ولغاتك. نظّم يومك وتعلّم بإيدك.</p><div className="tag-row"><span>Worship</span><span>Sports</span><span>Study</span><span>Skills</span><span>Languages</span></div><div className="hero-actions"><a className="btn btn-gold" href="#versions">اطلب دلوقتي <ArrowLeft/></a><a className="btn btn-outline" href="#contents">شوف الفهرس</a></div><div className="micro-trust"><span><Check/> اطلب من واتساب في دقيقة</span><span><Check/> ادفع بالطريقة المناسبة</span><span><Check/> استلم نسختك بعد التأكيد</span></div></div><div className="hero-art"><div className="book-shadow"/><div className="book-cover"><div className="cover-kicker">DAILY PLANNER</div><div className="cover-title">ملتزم</div><div className="cover-sub">مش لازم تغيّر حياتك.. ابدأ بخطوة</div><div className="pulse-line">♡ ━━━━━ ♡</div><div className="cover-seal">31<small>daily sheets</small></div><div className="cover-categories"><i>Worship</i><i>Sports</i><i>Study</i><i>Skills</i><i>Languages</i></div><div className="cover-bottom">The most beloved deeds are the most consistent, even if small.</div></div><div className="float-note">خطوة صغيرة كل يوم ✦</div></div></section>}
 function Stats(){return <section className="stats wrap"><div><b>31</b><span>يوم التزام</span></div><div><b>124</b><span>صفحة</span></div><div><b>A4 + A5</b><span>مقاسات للطباعة</span></div><div><b>114</b><span>سورة في بستان القرآن*</span></div><small>* أرقام ومواصفات أولية وفق المادة التسويقية المرسلة، وتُراجع قبل النشر النهائي.</small></section>}
@@ -124,6 +207,7 @@ function Home() {
   return (
     <>
       <Header />
+      <TrackingEntry />
       <main>
         <Hero />
         <Stats />
@@ -152,6 +236,8 @@ function Order() {
   const [proof, setProof] = useState(null);
   const [orderId, setOrderId] = useState('');
   const [trackingToken, setTrackingToken] = useState('');
+  const [trackingLinkCopied, setTrackingLinkCopied] = useState(false);
+  const [trackingLinkMessage, setTrackingLinkMessage] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -224,6 +310,17 @@ function Order() {
     }
   }
 
+  async function copyTrackingUrl(url) {
+    try {
+      await navigator.clipboard.writeText(url);
+      setTrackingLinkCopied(true);
+      setTrackingLinkMessage('تم نسخ رابط المتابعة. احتفظ به للرجوع إلى طلبك.');
+      window.setTimeout(() => setTrackingLinkCopied(false), 1800);
+    } catch {
+      setTrackingLinkMessage('تعذر النسخ تلقائيًا. حدّد الرابط وانسخه يدويًا.');
+    }
+  }
+
   async function saveOrder(event) {
     event.preventDefault();
     if (!supabase || !proof) {
@@ -264,14 +361,38 @@ orderData.append('paymentMethod', selectedPaymentMethod?.label || form.payment);
   }
 
   if (orderId) {
+    const trackingUrl = createTrackingUrl(trackingToken);
+    const whatsappMessage = `رابط متابعة طلبي من ملتزم: ${trackingUrl}`;
+
     return (
       <div className="order-page">
         <div className="order-card success">
           <ShieldCheck size={42} />
           <h1>تم إرسال طلبك بنجاح</h1>
           <p>رقم الطلب: {orderId}</p>
-          <Link className="btn btn-gold full" to={`/track-order#${encodeURIComponent(trackingToken)}`}>متابعة الطلب بأمان</Link>
-          <small>احتفظ برابط المتابعة؛ لن تحتاج إلى رقم الهاتف لمشاهدة حالتك.</small>
+          <div className="tracking-link-box">
+            <label htmlFor="customer-tracking-link">رابط المتابعة الخاص بطلبك</label>
+            <input
+              id="customer-tracking-link"
+              type="text"
+              dir="ltr"
+              readOnly
+              value={trackingUrl}
+              onFocus={event => event.target.select()}
+              aria-label="رابط المتابعة الخاص بطلبك"
+            />
+            <div className="tracking-share-actions">
+              <button className="btn btn-outline" type="button" onClick={() => copyTrackingUrl(trackingUrl)}>
+                <Copy size={16} /> {trackingLinkCopied ? 'تم النسخ' : 'نسخ الرابط'}
+              </button>
+              <a className="btn btn-green" href={`https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`} target="_blank" rel="noopener noreferrer">
+                <MessageCircle size={16} /> مشاركة عبر واتساب
+              </a>
+            </div>
+            {trackingLinkMessage && <small className="tracking-link-message" role="status">{trackingLinkMessage}</small>}
+          </div>
+          <Link className="btn btn-gold full" to={`/track-order#${encodeURIComponent(trackingToken)}`}>عرض حالة الطلب</Link>
+          <small>احتفظ بهذا الرابط أو أرسله لنفسك على واتساب. لا تحتاج إلى رقم الهاتف للمتابعة.</small>
         </div>
       </div>
     );
@@ -305,80 +426,141 @@ function AdminLogin(){const [email,setEmail]=useState('');const [password,setPas
 
 function TrackOrder() {
   const [trackingToken, setTrackingToken] = useState('');
+  const [activeToken, setActiveToken] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const token = window.location.hash.slice(1);
-    if (token) {
-      setTrackingToken(token);
-      window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
-    }
-  }, []);
-
-  async function searchOrder(e) {
+  async function searchOrder(e, input = trackingToken) {
     e?.preventDefault();
-    if (!supabase || !trackingToken.trim()) return;
+    const token = extractTrackingToken(input);
+    if (!token) {
+      setError('الصق رابط المتابعة كاملًا أو أدخل رمز المتابعة الصحيح.');
+      setResult(null);
+      setActiveToken('');
+      return;
+    }
+    if (!supabase) {
+      setError('تعذر الاتصال بخدمة تتبع الطلبات الآن. حاول مرة أخرى لاحقًا.');
+      return;
+    }
+
     setLoading(true);
     setError('');
     setResult(null);
+    setTrackingToken(token);
 
-    const { data, error } = await supabase.functions.invoke('track-order', {
-      body: { trackingToken: trackingToken.trim() }
-    });
+    try {
+      const { data, error: requestError } = await supabase.functions.invoke('track-order', {
+        body: { trackingToken: token }
+      });
 
-    setLoading(false);
+      if (requestError || data?.error || !data?.order) {
+        throw new Error('Tracking lookup failed');
+      }
 
-    if (error) {
-      setError('حصل خطأ، حاول مرة تانية');
-      return;
+      setResult(data.order);
+      setActiveToken(token);
+      window.history.replaceState(null, '', `/track-order#${encodeURIComponent(token)}`);
+    } catch {
+      setError('الرابط أو الرمز غير صحيح، أو تعذر الاتصال بالخدمة. راجع الرابط وحاول مرة أخرى.');
+      setActiveToken('');
+    } finally {
+      setLoading(false);
     }
-
-    if (!data?.order) {
-      setError('رمز المتابعة غير صحيح أو لم يعد متاحًا.');
-      return;
-    }
-
-    setResult(data.order);
   }
+
+  useEffect(() => {
+    const token = extractTrackingToken(window.location.hash);
+    if (token) {
+      setTrackingToken(token);
+      void searchOrder(null, token);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!activeToken || !supabase) return undefined;
+
+    let active = true;
+    const refreshOrder = async () => {
+      try {
+        const { data, error: requestError } = await supabase.functions.invoke('track-order', {
+          body: { trackingToken: activeToken }
+        });
+
+        if (!active || requestError || data?.error || !data?.order) return;
+        setResult(data.order);
+      } catch {
+        // Keep the last known status visible if a background refresh briefly fails.
+      }
+    };
+
+    const interval = window.setInterval(refreshOrder, 30000);
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+    };
+  }, [activeToken]);
+
+  const statuses = {
+    pending: { label: 'قيد المراجعة', message: 'استلمنا طلبك، وجاري مراجعة إيصال الدفع.', className: 'pending' },
+    approved: { label: 'تمت الموافقة', message: 'تمت الموافقة على طلبك. سنحدّث الحالة عند تجهيز رابط الاستلام.', className: 'approved' },
+    rejected: { label: 'مرفوض', message: 'تعذر قبول الطلب. إذا كنت ترى أن هذا خطأ، تواصل معنا.', className: 'rejected' },
+    delivered: { label: 'تم التسليم', message: 'تم تسليم طلبك. استخدم رابط الاستلام أدناه.', className: 'delivered' }
+  };
+  const status = result ? statuses[result.status] : null;
+  const deliveryUrl = result?.status === 'delivered' ? getSafeDeliveryUrl(result.delivery_url) : '';
 
   return (
     <div className="order-page">
       <div className="order-card">
         <span className="eyebrow">متابعة الطلب</span>
         <h1>تتبع طلبك</h1>
+        <p>أدخل الرمز الخاص أو الصق رابط المتابعة الذي احتفظت به.</p>
 
         <form className="order-form" onSubmit={searchOrder}>
           <label>
-            رمز المتابعة الخاص بطلبك
+            رابط المتابعة أو الرمز الخاص بطلبك
             <input
               type="password"
+              inputMode="url"
               autoComplete="off"
+              autoCapitalize="off"
+              spellCheck="false"
+              dir="ltr"
               value={trackingToken}
               onChange={e => setTrackingToken(e.target.value)}
-              placeholder="أدخل رمز المتابعة الذي ظهر بعد الإرسال"
+              placeholder="الصق الرابط أو الرمز هنا"
               required
             />
           </label>
 
-          <button className="btn btn-gold full" disabled={loading}>
+          <button className="btn btn-gold full" type="submit" disabled={loading}>
             {loading ? 'جاري البحث...' : 'تتبع الطلب'}
           </button>
         </form>
 
-        {error && <p className="error">{error}</p>}
+        {error && <p className="error" role="alert">{error}</p>}
 
-        {result && (
-          <div className="success">
-            <h3>{result.product_name}</h3>
-            <p>حالة الطلب: {result.status}</p>
-            {result.delivery_url && (
-              <a href={result.delivery_url} target="_blank" rel="noreferrer">
-                استلام المنتج
+        {result && status && (
+          <section className={`tracking-result status-${status.className}`} aria-live="polite">
+            <div className="tracking-result-heading">
+              <div>
+                <small>المنتج</small>
+                <h2>{result.product_name}</h2>
+              </div>
+              <span className="tracking-status-badge">{status.label}</span>
+            </div>
+            <p>{status.message}</p>
+            {result.updated_at && <small className="tracking-updated">آخر تحديث: {new Date(result.updated_at).toLocaleString('ar-EG')}</small>}
+            {result.status === 'delivered' && deliveryUrl && (
+              <a className="btn btn-gold full" href={deliveryUrl} target="_blank" rel="noopener noreferrer">
+                استلام المنتج <Download size={17} />
               </a>
             )}
-          </div>
+            {result.status === 'delivered' && !deliveryUrl && <small className="tracking-no-delivery">لم يظهر رابط الاستلام. تواصل معنا لمساعدتك.</small>}
+            <small className="tracking-auto-refresh">تُحدّث الحالة تلقائيًا كل 30 ثانية.</small>
+          </section>
         )}
       </div>
     </div>
