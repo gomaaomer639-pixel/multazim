@@ -13,11 +13,16 @@ create table if not exists public.orders (
   proof_path text not null,
   note text,
   tracking_token_hash text,
+  order_number_hash text,
   status text not null default 'pending' check (status in ('pending','approved','rejected','delivered')),
   delivery_url text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+create unique index if not exists orders_order_number_hash_uidx
+  on public.orders (order_number_hash)
+  where order_number_hash is not null;
 
 create table if not exists public.user_roles (
   user_id uuid primary key references auth.users(id) on delete cascade,

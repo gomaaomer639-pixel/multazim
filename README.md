@@ -13,7 +13,7 @@ A fresh React + Vite + Supabase starter for the Arabic daily-planner storefront.
 
 ## Run locally
 1. Install Node.js 20 or newer.
-2. Copy `.env.example` to `.env` and set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
+2. Copy `.env.example` to `.env.local` and set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. Keep this local-only file out of Git; never add a service-role key to it.
 3. Run `npm install`.
 4. Run `npm run dev`.
 
@@ -26,17 +26,17 @@ A fresh React + Vite + Supabase starter for the Arabic daily-planner storefront.
 
 ## Secure order submission and tracking
 
-Order creation and tracking run through the Edge Functions in `supabase/functions/`. The browser only uses the public anon key. Never add a service-role key to `.env`, `VITE_*` variables, frontend code, or a deployable file.
+Storefront configuration, order creation, and tracking run through the Edge Functions in `supabase/functions/`. The browser only uses the public anon key. Never add a service-role key to any `.env*` file, `VITE_*` variable, frontend code, or deployable file.
 
 Before deploying the functions:
 
 1. Run `supabase/order-security-diagnostics.sql` in the SQL Editor and review the policy output. Check for any broad `storage.objects` read policy that could include `payment-proofs`.
-2. After reviewing the output, run `supabase/order-security.sql`. This disables direct public order inserts and proof uploads, preserves admin order access, makes the proof bucket private, and adds a hashed per-order tracking token.
-3. From the project folder, link the Supabase CLI to the intended project if needed, then deploy `create-order` and `track-order` with `supabase functions deploy create-order --project-ref qbcubpktpwxdkoxplcqh` and `supabase functions deploy track-order --project-ref qbcubpktpwxdkoxplcqh`. In Supabase Edge Function secrets, confirm `SUPABASE_SERVICE_ROLE_KEY` is available to the functions; if it is not, set it there only. Never share or paste the value into the frontend or this repository.
+2. For a new project, after reviewing the output, run `supabase/order-security.sql` to disable direct public order inserts and proof uploads, preserve admin order access, and make the proof bucket private. For the existing Multazim project where this security setup is already applied, do not rerun that script. Apply only the additive `supabase/order-number-tracking.sql` migration; it adds the nullable hash column and unique index without changing RLS or grants.
+3. From the project folder, link the Supabase CLI to the intended project if needed, then deploy the functions with `supabase functions deploy storefront-config --project-ref qbcubpktpwxdkoxplcqh`, `supabase functions deploy create-order --project-ref qbcubpktpwxdkoxplcqh`, and `supabase functions deploy track-order --project-ref qbcubpktpwxdkoxplcqh`. In Supabase Edge Function secrets, confirm `SUPABASE_SERVICE_ROLE_KEY` is available to the functions; if it is not, set it there only. Never share or paste the value into the frontend or this repository.
 4. In the Supabase function settings, keep JWT verification enabled. The storefront calls the functions using its anon client.
 5. Re-run the diagnostics and verify there is no public/anon read policy for `payment-proofs`. Then test a new order and its generated tracking link in a non-production or explicitly approved production test flow.
 
-Existing orders will have a null `tracking_token_hash` and cannot use the new token flow. New orders receive a one-time token; the raw token is returned only to the customer and only its SHA-256 hash is stored. Customers cannot retrieve an order by UUID and phone number.
+New orders receive a short `MLT-XXXX-XXXX-XXXX` order number containing 12 cryptographically random characters. Only its SHA-256 hash is stored, and the tracking function returns only that order's product, status, and (after delivery) delivery URL. Existing private tracking-token links remain supported. Existing orders cannot be assigned a recoverable order number after creation, so customers should keep using their previous private tracking link. Customers cannot retrieve an order by UUID and phone number.
 
 ## Important production work still required
 This is a project foundation, not a live payment or delivery system. Before accepting real orders:

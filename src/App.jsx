@@ -2,29 +2,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Routes, Route, Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Check, ChevronDown, CircleHelp, Clock3, Copy, Download, FileText, Heart, Menu, MessageCircle, ShieldCheck, Sparkles, Star, X } from 'lucide-react';
 import { supabase } from './lib/supabase';
+import { extractTrackingCredential } from './lib/tracking';
 
-const trackingTokenPattern = /^[A-Za-z0-9_-]{40,50}$/;
-
-function extractTrackingToken(value) {
-  const input = String(value || '').trim();
-  if (!input) return '';
-
-  try {
-    const url = new URL(input, window.location.origin);
-    if (url.pathname.replace(/\/+$/, '') === '/track-order' && url.hash) {
-      const token = decodeURIComponent(url.hash.slice(1));
-      return trackingTokenPattern.test(token) ? token : '';
-    }
-  } catch {
-    // Fall through so a raw token can be entered without a URL.
-  }
-
-  const token = input.startsWith('#') ? input.slice(1) : input;
-  return trackingTokenPattern.test(token) ? token : '';
-}
-
-function createTrackingUrl(token) {
-  return `${window.location.origin}/track-order#${encodeURIComponent(token)}`;
+function createTrackingUrl(orderNumber) {
+  return `${window.location.origin}/track-order#${encodeURIComponent(orderNumber)}`;
 }
 
 function getSafeDeliveryUrl(value) {
@@ -65,34 +46,34 @@ function TrackingEntry() {
       return;
     }
 
-    const token = extractTrackingToken(input);
-    if (!token) {
-      setError('تأكد من نسخ رابط المتابعة أو الرمز كاملًا.');
+    const credential = extractTrackingCredential(input, window.location.origin);
+    if (!credential) {
+      setError('أدخل رقم الطلب كما ظهر لك بعد إتمام الشراء.');
       return;
     }
 
     setError('');
-    navigate(`/track-order#${encodeURIComponent(token)}`);
+    navigate(`/track-order#${encodeURIComponent(credential.value)}`);
   }
 
   return (
     <section className="tracking-entry wrap" id="tracking-entry" aria-label="تتبع طلبك">
       <div className="tracking-entry-copy">
-        <ShieldCheck size={22} />
-        <span><b>تتبع طلبك</b><small>الصق رابط المتابعة الخاص أو الرمز. رقم الطلب وحده لا يكفي.</small></span>
+        <span className="tracking-entry-icon"><ShieldCheck size={22} /></span>
+        <span><b>طلبك فين؟</b><small>اكتب رقم الطلب اللي وصلك بعد الشراء لمتابعة حالته.</small></span>
       </div>
       <form onSubmit={openTracking}>
         <input
-          type="password"
-          inputMode="url"
+          type="text"
+          inputMode="text"
           autoComplete="off"
-          autoCapitalize="off"
+          autoCapitalize="characters"
           spellCheck="false"
           dir="ltr"
           value={trackingInput}
           onChange={event => { setTrackingInput(event.target.value); setError(''); }}
-          placeholder="رابط المتابعة أو الرمز"
-          aria-label="رابط المتابعة أو الرمز"
+          placeholder="MLT-XXXX-XXXX-XXXX"
+          aria-label="رقم الطلب"
           aria-describedby={error ? 'tracking-entry-error' : undefined}
         />
         <button className="btn btn-gold" type="submit">تتبع الطلب <ArrowLeft size={16} /></button>
@@ -207,9 +188,9 @@ function Home() {
   return (
     <>
       <Header />
-      <TrackingEntry />
       <main>
         <Hero />
+        <TrackingEntry />
         <Stats />
         <Preview />
         <Benefits />
@@ -234,10 +215,9 @@ function Order() {
   const [paymentLoadError, setPaymentLoadError] = useState('');
   const [copiedPayment, setCopiedPayment] = useState('');
   const [proof, setProof] = useState(null);
-  const [orderId, setOrderId] = useState('');
+  const [orderNumber, setOrderNumber] = useState('');
   const [orderNumberCopied, setOrderNumberCopied] = useState(false);
   const [orderNumberMessage, setOrderNumberMessage] = useState('');
-  const [trackingToken, setTrackingToken] = useState('');
   const [trackingLinkCopied, setTrackingLinkCopied] = useState(false);
   const [trackingLinkMessage, setTrackingLinkMessage] = useState('');
   const [saving, setSaving] = useState(false);
@@ -250,53 +230,57 @@ function Order() {
         setPaymentLoadError('تعذر تحميل طرق الدفع الآن.');
         return;
       }
-      let data;
-      let loadError;
-      const storefront = await supabase.functions.invoke('storefront-config', { body: {} });
-      if (!storefront.error && !storefront.data?.error && Array.isArray(storefront.data?.paymentMethods)) {
-        data = storefront.data.paymentMethods;
-      } else {
-        let direct = await supabase
-          .from('payment_methods')
-          .select('*')
-          .eq('is_active', true)
-          .order('method_code');
-        if (direct.error) {
-          direct = await supabase
-            .from('payment_method')
+      try {
+        let data;
+        let loadError;
+        const storefront = await supabase.functions.invoke('storefront-config', { body: {} });
+        if (!storefront.error && !storefront.data?.error && Array.isArray(storefront.data?.paymentMethods)) {
+          data = storefront.data.paymentMethods;
+        } else {
+          let direct = await supabase
+            .from('payment_methods')
             .select('*')
-            .eq('is_active', true);
+            .eq('is_active', true)
+            .order('method_code');
+          if (direct.error) {
+            direct = await supabase
+              .from('payment_method')
+              .select('*')
+              .eq('is_active', true);
+          }
+          if (direct.error) {
+            direct = await supabase
+              .from('payment_method')
+              .select('*')
+              .eq('active', true);
+          }
+          data = direct.data;
+          loadError = direct.error;
         }
-        if (direct.error) {
-          direct = await supabase
-            .from('payment_method')
-            .select('*')
-            .eq('active', true);
+        if (!active) return;
+        if (loadError) {
+          setPaymentLoadError('تعذر تحميل طرق الدفع. حدّث الصفحة أو تواصل معنا.');
+          return;
         }
-        data = direct.data;
-        loadError = direct.error;
+        const methods = (data || []).map(method => ({
+          ...method,
+          method_code: method.method_code || method.id,
+          display_name: method.display_name || method.label || method.method_code || method.id,
+          payment_identifier: method.payment_identifier || method.account_value || '',
+          instructions: method.instructions || (method.method_code === 'instapay'
+            ? 'حوّل المبلغ إلى حساب InstaPay الموضح، واكتب رقم الطلب في ملاحظات التحويل إن أمكن.'
+            : 'حوّل المبلغ إلى رقم Vodafone Cash الموضح، ثم ارفع صورة الإيصال لإتمام الطلب.')
+        }));
+        setPaymentMethods(methods);
+        setForm(current => ({
+          ...current,
+          payment: methods.some(method => method.display_name === current.payment)
+            ? current.payment
+            : (methods[0]?.display_name || '')
+        }));
+      } catch {
+        if (active) setPaymentLoadError('تعذر تحميل طرق الدفع. حدّث الصفحة أو تواصل معنا.');
       }
-      if (!active) return;
-      if (loadError) {
-        setPaymentLoadError('تعذر تحميل طرق الدفع. حدّث الصفحة أو تواصل معنا.');
-        return;
-      }
-      const methods = (data || []).map(method => ({
-        ...method,
-        method_code: method.method_code || method.id,
-        display_name: method.display_name || method.label || method.method_code || method.id,
-        payment_identifier: method.payment_identifier || method.account_value || '',
-        instructions: method.instructions || (method.method_code === 'instapay'
-          ? 'حوّل المبلغ إلى حساب InstaPay الموضح، واكتب رقم الطلب في ملاحظات التحويل إن أمكن.'
-          : 'حوّل المبلغ إلى رقم Vodafone Cash الموضح، ثم ارفع صورة الإيصال لإتمام الطلب.')
-      }));
-      setPaymentMethods(methods);
-      setForm(current => ({
-        ...current,
-        payment: methods.some(method => method.display_name === current.payment)
-          ? current.payment
-          : (methods[0]?.display_name || '')
-      }));
     }
     loadPaymentMethods();
     return () => { active = false; };
@@ -325,7 +309,7 @@ function Order() {
 
   async function copyOrderNumber() {
     try {
-      await navigator.clipboard.writeText(orderId);
+      await navigator.clipboard.writeText(orderNumber);
       setOrderNumberCopied(true);
       setOrderNumberMessage('تم نسخ رقم الطلب.');
       window.setTimeout(() => setOrderNumberCopied(false), 1800);
@@ -357,11 +341,10 @@ orderData.append('paymentMethod', selectedPaymentMethod?.label || form.payment);
       orderData.append('proof', proof);
 
       const { data, error: requestError } = await supabase.functions.invoke('create-order', { body: orderData });
-      if (requestError || data?.error || !data?.orderId || !data?.trackingToken) {
+      if (requestError || data?.error || !data?.orderNumber) {
         throw new Error('تعذر إرسال الطلب الآن. حاول مرة أخرى بعد قليل.');
       }
-      setOrderId(data.orderId);
-      setTrackingToken(data.trackingToken);
+      setOrderNumber(data.orderNumber);
     } catch {
       setError('تعذر إرسال الطلب الآن. تأكد من نشر خدمة الطلبات وإعدادها، ثم حاول مرة أخرى.');
     } finally {
@@ -373,8 +356,8 @@ orderData.append('paymentMethod', selectedPaymentMethod?.label || form.payment);
     return <div className="order-page"><div className="order-card"><h1>النسخة غير موجودة</h1><Link className="back-link" to="/">العودة للصفحة الرئيسية</Link></div></div>;
   }
 
-  if (orderId) {
-    const trackingUrl = createTrackingUrl(trackingToken);
+  if (orderNumber) {
+    const trackingUrl = createTrackingUrl(orderNumber);
     const whatsappMessage = `رابط متابعة طلبي من ملتزم: ${trackingUrl}`;
 
     return (
@@ -385,7 +368,7 @@ orderData.append('paymentMethod', selectedPaymentMethod?.label || form.payment);
           <div className="order-number-box">
             <div>
               <small>رقم الطلب</small>
-              <strong dir="ltr">{orderId}</strong>
+              <strong dir="ltr">{orderNumber}</strong>
             </div>
             <button className="btn btn-outline" type="button" onClick={copyOrderNumber}>
               <Copy size={16} /> {orderNumberCopied ? 'تم النسخ' : 'نسخ رقم الطلب'}
@@ -413,8 +396,8 @@ orderData.append('paymentMethod', selectedPaymentMethod?.label || form.payment);
             </div>
             {trackingLinkMessage && <small className="tracking-link-message" role="status">{trackingLinkMessage}</small>}
           </div>
-          <Link className="btn btn-gold full" to={`/track-order#${encodeURIComponent(trackingToken)}`}>متابعة الطلب بأمان</Link>
-          <small className="tracking-security-note">رقم الطلب الظاهر لا يكفي للوصول إلى حالة طلبك بأمان. احتفظ برابط المتابعة الخاص أو الرمز، أو أرسله لنفسك على واتساب.</small>
+          <Link className="btn btn-gold full" to={`/track-order#${encodeURIComponent(orderNumber)}`}>متابعة الطلب</Link>
+          <small className="tracking-security-note">احتفظ برقم الطلب لمتابعته لاحقًا، وشاركه فقط مع من تثق به.</small>
         </div>
       </div>
     );
@@ -447,19 +430,19 @@ orderData.append('paymentMethod', selectedPaymentMethod?.label || form.payment);
 function AdminLogin(){const [email,setEmail]=useState('');const [password,setPassword]=useState('');const [error,setError]=useState('');async function login(e){e.preventDefault();if(!supabase){setError('أضف مفاتيح Supabase في ملف .env أولاً.');return;}const {error}=await supabase.auth.signInWithPassword({email,password});if(error)setError(error.message);else location.href='/admin';}return <div className="order-page"><div className="order-card"><span className="eyebrow">إدارة المتجر</span><h1>دخول الأدمن</h1><form className="order-form" onSubmit={login}><label>البريد الإلكتروني<input type="email" value={email} onChange={e=>setEmail(e.target.value)} required/></label><label>كلمة المرور<input type="password" value={password} onChange={e=>setPassword(e.target.value)} required/></label><button className="btn btn-gold full">تسجيل الدخول</button>{error&&<p className="error">{error}</p>}</form></div></div>}
 
 function TrackOrder() {
-  const [trackingToken, setTrackingToken] = useState('');
-  const [activeToken, setActiveToken] = useState('');
+  const [trackingInput, setTrackingInput] = useState('');
+  const [activeCredential, setActiveCredential] = useState(null);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  async function searchOrder(e, input = trackingToken) {
+  async function searchOrder(e, input = trackingInput) {
     e?.preventDefault();
-    const token = extractTrackingToken(input);
-    if (!token) {
-      setError('الصق رابط المتابعة كاملًا أو أدخل رمز المتابعة الصحيح.');
+    const credential = extractTrackingCredential(input, window.location.origin);
+    if (!credential) {
+      setError('رقم الطلب غير صحيح. راجع الرقم وحاول مرة أخرى.');
       setResult(null);
-      setActiveToken('');
+      setActiveCredential(null);
       return;
     }
     if (!supabase) {
@@ -470,11 +453,13 @@ function TrackOrder() {
     setLoading(true);
     setError('');
     setResult(null);
-    setTrackingToken(token);
+    setTrackingInput(credential.value);
 
     try {
       const { data, error: requestError } = await supabase.functions.invoke('track-order', {
-        body: { trackingToken: token }
+        body: credential.type === 'orderNumber'
+          ? { orderNumber: credential.value }
+          : { trackingToken: credential.value }
       });
 
       if (requestError || data?.error || !data?.order) {
@@ -482,32 +467,34 @@ function TrackOrder() {
       }
 
       setResult(data.order);
-      setActiveToken(token);
-      window.history.replaceState(null, '', `/track-order#${encodeURIComponent(token)}`);
+      setActiveCredential(credential);
+      window.history.replaceState(null, '', `/track-order#${encodeURIComponent(credential.value)}`);
     } catch {
-      setError('الرابط أو الرمز غير صحيح، أو تعذر الاتصال بالخدمة. راجع الرابط وحاول مرة أخرى.');
-      setActiveToken('');
+      setError('رقم الطلب غير صحيح، أو تعذر الاتصال بالخدمة. راجع الرقم وحاول مرة أخرى.');
+      setActiveCredential(null);
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
-    const token = extractTrackingToken(window.location.hash);
-    if (token) {
-      setTrackingToken(token);
-      void searchOrder(null, token);
+    const credential = extractTrackingCredential(window.location.hash, window.location.origin);
+    if (credential) {
+      setTrackingInput(credential.value);
+      void searchOrder(null, credential.value);
     }
   }, []);
 
   useEffect(() => {
-    if (!activeToken || !supabase) return undefined;
+    if (!activeCredential || !supabase) return undefined;
 
     let active = true;
     const refreshOrder = async () => {
       try {
         const { data, error: requestError } = await supabase.functions.invoke('track-order', {
-          body: { trackingToken: activeToken }
+          body: activeCredential.type === 'orderNumber'
+            ? { orderNumber: activeCredential.value }
+            : { trackingToken: activeCredential.value }
         });
 
         if (!active || requestError || data?.error || !data?.order) return;
@@ -522,13 +509,13 @@ function TrackOrder() {
       active = false;
       window.clearInterval(interval);
     };
-  }, [activeToken]);
+  }, [activeCredential]);
 
   const statuses = {
     pending: { label: 'قيد المراجعة', message: 'استلمنا طلبك، وجاري مراجعة إيصال الدفع.', className: 'pending' },
-    approved: { label: 'تمت الموافقة', message: 'تمت الموافقة على طلبك. سنحدّث الحالة عند تجهيز رابط الاستلام.', className: 'approved' },
-    rejected: { label: 'مرفوض', message: 'تعذر قبول الطلب. إذا كنت ترى أن هذا خطأ، تواصل معنا.', className: 'rejected' },
-    delivered: { label: 'تم التسليم', message: 'تم تسليم طلبك. استخدم رابط الاستلام أدناه.', className: 'delivered' }
+    approved: { label: 'تم قبول الطلب', message: 'تم قبول طلبك. سنحدّث الحالة عند تجهيز رابط الاستلام.', className: 'approved' },
+    rejected: { label: 'تم رفض الطلب', message: 'تم رفض الطلب. إذا كنت ترى أن هذا خطأ، تواصل معنا.', className: 'rejected' },
+    delivered: { label: 'تم تسليم المنتج', message: 'تم تسليم المنتج. استخدم رابط الاستلام أدناه.', className: 'delivered' }
   };
   const status = result ? statuses[result.status] : null;
   const deliveryUrl = result?.status === 'delivered' ? getSafeDeliveryUrl(result.delivery_url) : '';
@@ -538,21 +525,21 @@ function TrackOrder() {
       <div className="order-card">
         <span className="eyebrow">متابعة الطلب</span>
         <h1>تتبع طلبك</h1>
-        <p>الصق رابط المتابعة الخاص أو أدخل الرمز الذي احتفظت به. رقم الطلب وحده لا يكفي للوصول إلى بيانات الطلب.</p>
+        <p>اكتب رقم الطلب الذي ظهر لك بعد الشراء لمتابعة حالته ورابط الاستلام عند توفره.</p>
 
         <form className="order-form" onSubmit={searchOrder}>
           <label>
-            رابط المتابعة أو الرمز الخاص بطلبك
+            رقم الطلب
             <input
-              type="password"
-              inputMode="url"
+              type="text"
+              inputMode="text"
               autoComplete="off"
-              autoCapitalize="off"
+              autoCapitalize="characters"
               spellCheck="false"
               dir="ltr"
-              value={trackingToken}
-              onChange={e => setTrackingToken(e.target.value)}
-              placeholder="الصق الرابط أو الرمز هنا"
+              value={trackingInput}
+              onChange={e => setTrackingInput(e.target.value)}
+              placeholder="MLT-XXXX-XXXX-XXXX"
               required
             />
           </label>
@@ -642,7 +629,7 @@ function Admin() {
     setBusy('loading');
 
     const [ordersResult, feedbackResult] = await Promise.all([
-      supabase.from('orders').select('*')
+      supabase.from('orders').select('id,customer_name,product_name,amount,email,phone,payment_method,status,note,proof_path,delivery_url,created_at')
         .order('created_at', { ascending: false }),
       supabase.from('feedback').select('*')
         .order('created_at', { ascending: false })

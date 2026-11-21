@@ -1,4 +1,9 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import {
+  canonicalPaymentMethodLabel,
+  findPaymentMethod,
+  loadActivePaymentMethods,
+} from "../_shared/payment-methods.js";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -25,19 +30,17 @@ function response(body: unknown, status = 200) {
   });
 }
 
-function makeToken(bytes: Uint8Array) {
-  let binary = "";
-  for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+const orderNumberAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+function makeOrderNumber() {
+  const random = crypto.getRandomValues(new Uint8Array(12));
+  const code = Array.from(random, byte => orderNumberAlphabet[byte & 31]).join("");
+  return `MLT-${code.slice(0, 4)}-${code.slice(4, 8)}-${code.slice(8, 12)}`;
 }
 
 async function sha256(value: string) {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
   return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, "0")).join("");
-}
-
-function normalizePaymentMethod(value: unknown) {
-  return String(value ?? "").normalize("NFKD").toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
 function normalizePhone(value: string) {
@@ -89,48 +92,24 @@ Deno.serve(async (request: Request) => {
     if (!product) return response({ error: "Product unavailable" }, 400);
 
   
-const methodQuery = await admin
-  .from("payment_methods")
-  .select("id,label,account_value,is_active")
-  .eq("is_active", true);
+const methodQuery = await loadActivePaymentMethods(admin);
 if (methodQuery.error) {
-  console.error("Payment methods error:", methodQuery.error);
+  console.error("Payment methods are unavailable:", methodQuery.error.code || "unknown");
   return response({ error: "Payment method unavailable" }, 503);
 }
 
-const normalize = (value: unknown) =>
-  String(value ?? "")
-    .normalize("NFKD")
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, "");
-
-const selectedMethod = (methodQuery.data || []).find((item: { id: string; label: string }) =>
-  [
-    item.id,
-    item.label,
-    item.label === "Vodafone Cash" ? "vodafone_cash" : "",
-    item.label === "InstaPay" ? "instapay" : "",
-  ].some((value) => normalize(value) === normalize(paymentMethod))
-);
+const selectedMethod = findPaymentMethod(methodQuery.rows, paymentMethod);
 
 if (!selectedMethod) {
   return response({ error: "Payment method unavailable" }, 400);
 }
 
- 
-
-const normalizedMethod = normalizePaymentMethod(selectedMethod.label);
-
-const orderPaymentName =
-  normalizedMethod === "vodafonecash" ? "Vodafone Cash" :
-  normalizedMethod === "instapay" ? "InstaPay" : null;
+const orderPaymentName = canonicalPaymentMethodLabel(selectedMethod);
 
 if (!orderPaymentName) {
   return response({ error: "Unsupported payment method" }, 400);
 }
 
-    const trackingToken = makeToken(crypto.getRandomValues(new Uint8Array(32)));
-    const trackingTokenHash = await sha256(trackingToken);
     const proofPath = `${crypto.randomUUID()}.${fileType.extension}`;
     const upload = await admin.storage.from("payment-proofs").upload(proofPath, proofBytes, {
       contentType: proof.type,
@@ -139,31 +118,49 @@ if (!orderPaymentName) {
     });
     if (upload.error) return response({ error: "Proof upload failed" }, 503);
 
-    const inserted = await admin.from("orders").insert({
-      customer_name: name,
-      email,
-      phone,
-      product_id: productId,
-      product_name: product.name,
-      amount: product.price,
-      payment_method: orderPaymentName,
-      proof_path: proofPath,
-      note: note || null,
-      status: "pending",
-      tracking_token_hash: trackingTokenHash,
-    }).select("id").single();
+    let orderNumber = "";
+    let insertedOrder: { id: string } | null = null;
+    let insertError: { code?: string; message?: string; details?: string } | null = null;
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      orderNumber = makeOrderNumber();
+      const orderNumberHash = await sha256(orderNumber);
+      const inserted = await admin.from("orders").insert({
+        customer_name: name,
+        email,
+        phone,
+        product_id: productId,
+        product_name: product.name,
+        amount: product.price,
+        payment_method: orderPaymentName,
+        proof_path: proofPath,
+        note: note || null,
+        status: "pending",
+        order_number_hash: orderNumberHash,
+      }).select("id").single();
 
-    if (inserted.error || !inserted.data) {
-      await admin.storage.from("payment-proofs").remove([proofPath]);
-      if (inserted.error?.code === "42703" || inserted.error?.code === "PGRST204") {
-        return response({ error: "Order database setup is incomplete; apply supabase/order-security.sql" }, 503);
+      if (!inserted.error && inserted.data) {
+        insertedOrder = inserted.data;
+        insertError = null;
+        break;
       }
-      if (inserted.error?.code === "23514") {
+
+      insertError = inserted.error;
+      const duplicateOrderNumber = inserted.error?.code === "23505" &&
+        `${inserted.error.message} ${inserted.error.details || ""}`.includes("order_number_hash");
+      if (!duplicateOrderNumber) break;
+    }
+
+    if (!insertedOrder) {
+      await admin.storage.from("payment-proofs").remove([proofPath]);
+      if (insertError?.code === "42703" || insertError?.code === "PGRST204") {
+        return response({ error: "Order database setup is incomplete; apply supabase/order-number-tracking.sql" }, 503);
+      }
+      if (insertError?.code === "23514") {
         return response({ error: "Order payment constraint does not match the supported payment names" }, 503);
       }
       return response({ error: "Order could not be saved" }, 503);
     }
-    return response({ orderId: inserted.data.id, trackingToken });
+    return response({ orderNumber });
   } catch {
     return response({ error: "Invalid request" }, 400);
   }
