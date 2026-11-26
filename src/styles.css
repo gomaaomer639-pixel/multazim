@@ -48,3 +48,4 @@
 .order-number-box .btn{flex:0 0 auto;padding:12px 14px;font-size:11px;white-space:nowrap}
 .tracking-security-note{display:block;margin-top:12px;color:var(--muted);font-size:11px;line-height:1.9}
 @media(max-width:560px){.nav-actions{gap:0}.nav-cta{display:none}.nav-track{padding:11px 12px;font-size:11px}.order-number-box{display:grid;grid-template-columns:1fr;gap:12px;padding:14px}.order-number-box .btn{width:100%}}
+.price{align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.price-current{display:flex;align-items:baseline;gap:8px}.price-discount{display:grid;gap:3px;text-align:right}.price-discount s{font:15px Georgia;color:var(--muted)}.price-discount span{font-size:10px;font-weight:700;color:#8fe0af}.product-empty{grid-column:1/-1;margin:0;padding:22px;border:1px solid var(--line);border-radius:14px;color:var(--muted);text-align:center;font-size:13px}

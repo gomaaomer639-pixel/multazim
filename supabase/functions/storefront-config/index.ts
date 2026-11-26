@@ -28,7 +28,7 @@ Deno.serve(async request => {
     });
     const [paymentResult, catalogResult] = await Promise.all([
       loadActivePaymentMethods(admin),
-      admin.from("product_catalog").select("id,name,price,active").eq("active", true),
+      admin.from("product_catalog").select("id,name,price,old_price,active").eq("active", true),
     ]);
     const { rows, error } = paymentResult;
     if (error) {
@@ -39,11 +39,15 @@ Deno.serve(async request => {
     const products = catalogResult.error
       ? []
       : (catalogResult.data || [])
-        .filter(product => product.active !== false && Number.isFinite(Number(product.price)))
+        .filter(product => product.active === true && product.price != null && Number.isFinite(Number(product.price)) && Number(product.price) >= 0)
         .map(product => ({
           id: product.id,
           name: product.name,
           price: Number(product.price),
+          old_price: product.old_price == null || !Number.isFinite(Number(product.old_price))
+            ? null
+            : Number(product.old_price),
+          active: product.active,
         }));
 
     return response({ products, paymentMethods: rows });

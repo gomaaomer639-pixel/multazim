@@ -3,6 +3,7 @@ import { Routes, Route, Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Check, ChevronDown, CircleHelp, Clock3, Copy, Download, FileText, Heart, Menu, MessageCircle, ShieldCheck, Sparkles, Star, X } from 'lucide-react';
 import { supabase } from './lib/supabase';
 import { extractTrackingCredential } from './lib/tracking';
+import { getProductDiscount, mapActiveProducts } from './lib/products';
 
 function createTrackingUrl(orderNumber) {
   return `${window.location.origin}/track-order#${encodeURIComponent(orderNumber)}`;
@@ -29,8 +30,16 @@ const sections = [
 const products = [
  {id:'pdf',name:'نسخة PDF للطباعة',price:59,description:'ملف PDF للطباعة بمقاسي A4 وA5، مرتب مثل الكراسة.',features:['124 صفحة','مقاس A4 وA5','جاهز للطباعة']},
  {id:'interactive',name:'النسخة التفاعلية',price:49,description:'نسخة رقمية تفاعلية تقدر تعلم وتكتب فيها من الموبايل أو الكمبيوتر.',features:['متابعة العادات والصلوات','تكتب وتحفظ تقدمك','تعمل على الموبايل والكمبيوتر']},
- {id:'printed',name:'النسخة المطبوعة',price:89,description:'كراسة مطبوعة جاهزة للاستخدام، السعر قابل للتعديل من لوحة التحكم.',features:['كراسة مطبوعة','ترتيب صفحات البلانر','تأكيد تفاصيل الشحن لاحقًا']}
+ {id:'printed',name:'النسخة المطبوعة',price:89,description:'كراسة مطبوعة جاهزة للاستخدام، تساعدك تتابع عبادتك وعاداتك وأهدافك يومًا بيوم.',features:['كراسة مطبوعة','ترتيب صفحات البلانر','تأكيد تفاصيل الشحن لاحقًا']}
 ];
+
+async function loadStorefrontProducts() {
+  const { data, error } = await supabase.functions.invoke('storefront-config', { body: {} });
+  if (error || data?.error || !Array.isArray(data?.products)) {
+    throw new Error('Storefront products are unavailable');
+  }
+  return mapActiveProducts(data.products, products);
+}
 function Header(){return <header className="topbar"><a href="#home" className="brand"><span className="brand-mark">م</span><span>ملتزم<small>بلانر يومي بأسلوب حياة</small></span></a><nav><a href="#preview">المعاينة</a><a href="#contents">الفهرس</a><a href="#versions">النسخ والأسعار</a><a href="#faq">الأسئلة الشائعة</a></nav><div className="nav-actions"><a className="nav-track" href="#tracking-entry"><ShieldCheck size={16}/>تتبع طلبك</a><a className="nav-cta" href="#versions">اطلب نسختك <ArrowLeft size={16}/></a></div></header>}
 
 function TrackingEntry() {
@@ -89,7 +98,7 @@ function Preview(){return <section className="section wrap" id="preview"><div cl
 function Contents(){return <section className="section contents-section" id="contents"><div className="wrap"><div className="section-head"><span className="eyebrow">اكتشف المحتوى</span><h2>الفهرس.. كل حاجة في مكانها</h2><p>أقسام البلانر مرتبة لتسهّل عليك الوصول للموضوع اللي محتاجه.</p></div><div className="contents-grid">{sections.map((s,i)=><article className={`content-card ${s.color}`} key={s.title}><h3><span>{String(i+1).padStart(2,'0')}</span>{s.title}</h3><ol>{s.items.map((it,j)=><li key={it}><span>{it}</span><b>{i===0?66+j:i===1?76+j:i===2?84+j:94+j}</b></li>)}</ol></article>)}</div></div></section>}
 function Benefits(){return <section className="section wrap"><div className="section-head"><span className="eyebrow">ليه بلانر؟</span><h2>الالتزام بيتبني بخطوة صغيرة كل يوم</h2></div><div className="benefit-grid"><article><BookOpen/><h3>يومك في صفحة واحدة</h3><p>تابع عبادتك وعاداتك وأهدافك بدون ما تفتح خمس تطبيقات.</p></article><article><Check/><h3>علامة صح بتحسّسك</h3><p>تابع إنجازاتك وشوف تقدمك مع نهاية كل يوم.</p></article><article><Download/><h3>اطبعه أو سجّل أونلاين</h3><p>اختار الطريقة اللي تناسبك: PDF للطباعة أو نسخة تفاعلية.</p></article></div></section>}
 
-function ProductCards({ products = [] }) {
+function ProductCards({ products = [], loading = false, error = '' }) {
   return (
     <section className="section product-section" id="versions">
       <div className="wrap">
@@ -99,8 +108,15 @@ function ProductCards({ products = [] }) {
           <p>اختار النسخة المناسبة ليك، وبعدها كمّل بيانات الطلب.</p>
         </div>
 
+        {loading || error || products.length === 0 ? (
+          <p className="product-empty" role={error ? 'alert' : 'status'}>
+            {loading ? 'جاري تحميل النسخ المتاحة...' : error || 'لا توجد نسخ متاحة للطلب حاليًا.'}
+          </p>
+        ) : (
         <div className="product-grid">
-          {products.map((p, i) => (
+          {products.map((p, i) => {
+            const discount = getProductDiscount(p);
+            return (
             <article
               className={`product-card ${i === 1 ? 'featured' : ''}`}
               key={p.id}
@@ -115,8 +131,13 @@ function ProductCards({ products = [] }) {
               <p>{p.description || 'اختار النسخة المناسبة ليك وابدأ تنظيم يومك.'}</p>
 
               <div className="price">
-                <b>{p.price}</b>
-                <span>جنيه</span>
+                <div className="price-current"><b>{p.price}</b><span>جنيه</span></div>
+                {discount && (
+                  <div className="price-discount" aria-label={`خصم ${discount.percentage}٪`}>
+                    <s>{discount.oldPrice} جنيه</s>
+                    <span>{discount.percentage}٪ خصم</span>
+                  </div>
+                )}
               </div>
 
               <ul>
@@ -135,8 +156,10 @@ function ProductCards({ products = [] }) {
                 اطلب النسخة <ArrowLeft size={17} />
               </Link>
             </article>
-          ))}
+            );
+          })}
         </div>
+        )}
       </div>
     </section>
   );
@@ -148,33 +171,30 @@ const faqs=[['أطبع الكراسة إزاي؟','تقدر تطبع نسخة PD
 function FAQ(){const [open,setOpen]=useState(0);return <section className="section wrap" id="faq"><div className="section-head"><span className="eyebrow">محتاج تعرف إيه؟</span><h2>أسئلة بتتسأل كتير</h2></div><div className="faq-list">{faqs.map(([q,a],i)=><article key={q}><button onClick={()=>setOpen(open===i?-1:i)}>{q}{open===i?<X/>:<ChevronDown/>}</button>{open===i&&<p>{a}</p>}</article>)}</div></section>}
 function Footer(){return <footer><div className="wrap footer-inner"><div><h2>ابدأ يومك الأول النهارده</h2><p>31 يوم، وكل يوم خطوة صغيرة.</p></div><a className="btn btn-gold" href="#versions">اطلب دلوقتي <ArrowLeft/></a></div><div className="footer-bottom">ملتزم · بلانر يومي <span>الأعمال أحب إلى الله أدومها وإن قل</span></div></footer>}
 function Home() {
-  const [storeProducts, setStoreProducts] = useState(products);
+  const [storeProducts, setStoreProducts] = useState(supabase ? [] : products);
+  const [productsLoading, setProductsLoading] = useState(Boolean(supabase));
+  const [productLoadError, setProductLoadError] = useState('');
 
   useEffect(() => {
     let active = true;
 
     async function loadProducts() {
-      if (!supabase) return;
+      if (!supabase) {
+        setProductsLoading(false);
+        return;
+      }
 
-      const { data, error } = await supabase.functions.invoke(
-        'storefront-config',
-        { body: {} }
-      );
-
-      if (!active || error || !Array.isArray(data?.products)) return;
-
-      if (data.products.length > 0) {
-        const updatedProducts = products.map(defaultProduct => {
-          const remoteProduct = data.products.find(
-            item => item.id === defaultProduct.id
-          );
-
-          return remoteProduct
-            ? { ...defaultProduct, ...remoteProduct }
-            : defaultProduct;
-        });
-
-        setStoreProducts(updatedProducts);
+      try {
+        const availableProducts = await loadStorefrontProducts();
+        if (!active) return;
+        setStoreProducts(availableProducts);
+        setProductLoadError('');
+      } catch {
+        if (!active) return;
+        setStoreProducts([]);
+        setProductLoadError('تعذر تحميل النسخ المتاحة الآن. حدّث الصفحة وحاول مرة أخرى.');
+      } finally {
+        if (active) setProductsLoading(false);
       }
     }
 
@@ -196,7 +216,7 @@ function Home() {
         <Benefits />
        <Contents />
 
-<ProductCards products={storeProducts} />
+<ProductCards products={storeProducts} loading={productsLoading} error={productLoadError} />
 
 <Steps />
         <Feedback />
@@ -209,7 +229,8 @@ function Home() {
 }
 function Order() {
   const { id } = useParams();
-  const product = products.find(item => item.id === id);
+  const [product, setProduct] = useState(() => supabase ? null : (products.find(item => item.id === id) || null));
+  const [productLoading, setProductLoading] = useState(Boolean(supabase));
   const [form, setForm] = useState({ name: '', email: '', phone: '', payment: '', note: '' });
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [paymentLoadError, setPaymentLoadError] = useState('');
@@ -222,6 +243,32 @@ function Order() {
   const [trackingLinkMessage, setTrackingLinkMessage] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadProduct() {
+      setProduct(null);
+      setProductLoading(Boolean(supabase));
+      if (!supabase) {
+        setProduct(products.find(item => item.id === id) || null);
+        setProductLoading(false);
+        return;
+      }
+
+      try {
+        const availableProducts = await loadStorefrontProducts();
+        if (active) setProduct(availableProducts.find(item => item.id === id) || null);
+      } catch {
+        if (active) setProduct(null);
+      } finally {
+        if (active) setProductLoading(false);
+      }
+    }
+
+    loadProduct();
+    return () => { active = false; };
+  }, [id]);
 
   useEffect(() => {
     let active = true;
@@ -352,8 +399,12 @@ orderData.append('paymentMethod', selectedPaymentMethod?.label || form.payment);
     }
   }
 
+  if (productLoading || (supabase && product?.id !== id)) {
+    return <div className="order-page"><div className="order-card"><p role="status">جاري التحقق من توفر النسخة...</p></div></div>;
+  }
+
   if (!product) {
-    return <div className="order-page"><div className="order-card"><h1>النسخة غير موجودة</h1><Link className="back-link" to="/">العودة للصفحة الرئيسية</Link></div></div>;
+    return <div className="order-page"><div className="order-card"><h1>النسخة غير متاحة حاليًا</h1><p>لا يمكن استقبال طلبات لهذه النسخة الآن.</p><Link className="back-link" to="/">العودة إلى المتجر</Link></div></div>;
   }
 
   if (orderNumber) {

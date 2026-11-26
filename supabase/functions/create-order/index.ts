@@ -82,7 +82,8 @@ Deno.serve(async (request: Request) => {
     let product = staticProducts[productId];
     const catalog = await admin.from("product_catalog").select("id,name,price,active").eq("id", productId).maybeSingle();
     if (!catalog.error) {
-      if (!catalog.data || catalog.data.active === false || !Number.isFinite(Number(catalog.data.price))) {
+      if (!catalog.data || catalog.data.active !== true || catalog.data.price == null ||
+          !Number.isFinite(Number(catalog.data.price)) || Number(catalog.data.price) < 0) {
         return response({ error: "Product unavailable" }, 400);
       }
       product = { name: catalog.data.name, price: Number(catalog.data.price) };
