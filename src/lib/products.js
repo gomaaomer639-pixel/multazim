@@ -2,7 +2,9 @@ export function mapActiveProducts(remoteProducts, fallbackProducts = []) {
   if (!Array.isArray(remoteProducts)) return [];
 
   return remoteProducts
-    .filter(product => product?.active === true && product.id && product.price != null &&
+    // The existing storefront function filters active rows before returning them,
+    // but older deployed versions do not include the active field in each row.
+    .filter(product => product?.active !== false && product.id && product.price != null &&
       Number.isFinite(Number(product.price)) && Number(product.price) >= 0)
     .map(product => {
       const price = Number(product.price);
